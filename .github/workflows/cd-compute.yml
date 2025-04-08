@@ -1,0 +1,19 @@
+name: Trigger Frontend Client Generation
+
+on:
+  push:
+    branches:
+      - main  # ou la branche appropriée contenant la spécification API
+
+jobs:
+  trigger-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Trigger Frontend Client Generation
+        run: |
+          curl -X POST https://api.github.com/repos/SNGF-official/WEB/dispatches \
+          -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+          -d '{"event_type": "generate-client"}'
