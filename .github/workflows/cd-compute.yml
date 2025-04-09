@@ -3,7 +3,7 @@ name: Trigger Frontend Client Generation
 on:
   push:
     branches:
-      - main  # ou la branche appropriée contenant la spécification API
+      - docs/api  # la branche appropriée contenant la spécification API
 
 jobs:
   trigger-frontend:
