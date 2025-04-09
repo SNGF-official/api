@@ -1,0 +1,5 @@
+# General
+# ------------------------------------------------------------------------------
+USE_DOCKER=yes
+IPYTHONDIR=/app/.ipython
+DATABASE_URL=postgres://postgres:password@localhost:5432/sngf_db
