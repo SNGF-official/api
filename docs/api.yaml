@@ -313,8 +313,8 @@ components:
         - status
       properties:
         id:
-          type: integer
-          readOnly: true
+          type: string
+          format: uuid
         name:
           type: string
           example: "Basilic"
@@ -367,8 +367,8 @@ components:
         - status
       properties:
         id:
-          type: integer
-          readOnly: true
+          type: string
+          format: uuid
         title:
           type: string
           example: "Atelier jardinage printemps"
@@ -397,8 +397,8 @@ components:
         - status
       properties:
         id:
-          type: integer
-          readOnly: true
+          type: string
+          format: uuid
         title:
           type: string
           example: "Comment faire pousser des tomates sur balcon"
@@ -421,8 +421,8 @@ components:
         - items
       properties:
         id:
-          type: integer
-          readOnly: true
+          type: string
+          format: uuid
         items:
           type: array
           items:
@@ -443,3 +443,20 @@ components:
         status:
           type: string
           enum: [PENDING, CONFIRMED, CANCELLED]
+    Contact:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "John Doe"
+        customer_email:
+          type: string
+          example: "example@gmail.com"
+        message:
+          type: string
+          example: "message from John Doe"
