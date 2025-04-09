@@ -6,48 +6,65 @@ info:
 
 paths:
   /plants/:
-    get:
-      tags: [Plants]
-      summary: Get list of plants
-      description: Retrieve a filtered list of active plants and seeds.
-      operationId: GetListPlant
-      parameters:
-        - in: query
-          name: name
-          schema:
-            type: string
-          description: Filter by plant name
-        - in: query
-          name: type
-          schema:
-            type: string
-          description: Filter by plant type
-        - in: query
-          name: status
-          schema:
-            type: string
-            enum: [ACTIVE, INACTIVE]
-          description: Filter by plant status
-        - in: query
-          name: operator_id
-          schema:
-            type: integer
-          description: Filter by operator ID
-      responses:
-        '200':
-          description: Liste des plantes récupérée avec succès.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Plant'
+      get:
+        tags: [Plants]
+        summary: Get list of plants and seeds
+        description: Retrieve a filtered list of active plants and seeds.
+        operationId: GetListPlant
+        parameters:
+          - in: query
+            name: name
+            schema:
+              type: string
+            description: Filter by name
+          - in: query
+            name: type
+            schema:
+              type: string
+            description: Filter by type
+          - in: query
+            name: category
+            schema:
+              type: string
+              enum: [SEED, PLANT]
+            description: Filter by category (SEED or PLANT)
+          - in: query
+            name: size
+            schema:
+              type: string
+              enum: [XS, S, M, L, XL]
+            description: Filter by plant size (for PLANT category)
+          - in: query
+            name: unit
+            schema:
+              type: string
+            description: Filter by unit (for SEED category)
+          - in: query
+            name: status
+            schema:
+              type: string
+              enum: [ACTIVE, INACTIVE]
+            description: Filter by plant status
+          - in: query
+            name: operator_id
+            schema:
+              type: integer
+            description: Filter by operator ID
+        responses:
+          '200':
+            description: Liste des plantes et graines récupérée avec succès.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Plant'
 
   /plants/{id}:
     get:
       tags: [Plants]
-      summary: Get plant by ID
-      description: Retrieve a single plant by its ID.
+      summary: Get plant or seed by ID
+      description: Retrieve a single plant or seed by its ID.
       operationId: GetPlantByID
       parameters:
         - in: path
@@ -57,18 +74,18 @@ paths:
             type: integer
       responses:
         '200':
-          description: Détails de la plante récupérés avec succès.
+          description: Détails de la plante ou graine récupérés avec succès.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Plant'
         '404':
-          description: Plante non trouvée.
+          description: Plante ou graine non trouvée.
 
     put:
       tags: [Plants]
-      summary: Update a plant
-      description: Update an existing plant's information.
+      summary: Update a plant or seed
+      description: Update an existing plant or seed's information.
       operationId: CrupdatePlant
       parameters:
         - in: path
@@ -84,7 +101,7 @@ paths:
               $ref: '#/components/schemas/Plant'
       responses:
         '200':
-          description: Plante mise à jour avec succès.
+          description: Plante ou graine mise à jour avec succès.
         '400':
           description: Données invalides fournies.
 
@@ -250,58 +267,6 @@ paths:
         '400':
           description: Données invalides fournies.
 
-  /testimonials/:
-    get:
-      tags: [Testimonials]
-      summary: Get list of testimonials
-      description: Retrieve all active testimonials.
-      operationId: GetTestimonialList
-      parameters:
-        - in: query
-          name: status
-          schema:
-            type: string
-            enum: [ACTIVE, INACTIVE]
-          description: Filter by testimonial status
-        - in: query
-          name: operator_id
-          schema:
-            type: integer
-          description: Filter by operator ID
-      responses:
-        '200':
-          description: Témoignages récupérés avec succès.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Testimonial'
-
-  /testimonials/{id}:
-    put:
-      tags: [Testimonials]
-      summary: Update a testimonial
-      description: Update a testimonial's status or content.
-      operationId: CrupdateTestimonial
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Testimonial'
-      responses:
-        '200':
-          description: Témoignage mis à jour avec succès.
-        '400':
-          description: Données invalides fournies.
-
   /orders/:
     get:
       tags: [Orders]
@@ -342,7 +307,7 @@ components:
       required:
         - id
         - name
-        - type
+        - category
         - price
         - quantity
         - status
@@ -353,6 +318,10 @@ components:
         name:
           type: string
           example: "Basilic"
+        category:
+          type: string
+          enum: [ SEED, PLANT ]
+          example: "SEED"
         type:
           type: string
           example: "Herbe aromatique"
@@ -363,12 +332,26 @@ components:
           type: number
           format: float
           example: 3.5
+        price_per_unit:
+          type: number
+          format: float
+          example: 1.5
+          description: "Prix par unité (g pour graines, unité pour plantes)"
+        unit:
+          type: string
+          example: "g"
+          description: "Unité de vente (g, sachet, etc.)"
         quantity:
           type: integer
-          example: 20
+          example: 100
+          description: "Quantité disponible (en grammes pour graines ou unités pour plantes)"
+        size:
+          type: string
+          enum: [ XS, S, M, L, XL ]
+          description: "Taille de la plante (si catégorie = PLANT)"
         status:
           type: string
-          enum: [ACTIVE, INACTIVE]
+          enum: [ ACTIVE, INACTIVE ]
           example: ACTIVE
         image_url:
           type: string
@@ -427,30 +410,6 @@ components:
         published_at:
           type: string
           format: date-time
-        status:
-          type: string
-          enum: [ACTIVE, INACTIVE]
-
-    Testimonial:
-      type: object
-      required:
-        - id
-        - name
-        - message
-        - status
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        name:
-          type: string
-          example: "Claire B."
-        message:
-          type: string
-          example: "J'ai adoré les graines, elles ont bien poussé !"
-        image_url:
-          type: string
-          format: uri
         status:
           type: string
           enum: [ACTIVE, INACTIVE]
