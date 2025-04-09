@@ -26,7 +26,7 @@ class DummyModelView(CreateOrUpdateMixin, viewsets.GenericViewSet):
 factory = APIRequestFactory()
 
 
-@pytest.mark.django_db()
+@pytest.mark.django_db
 class TestCreateOrUpdateMixin:
     def test_create_object(self):
         data = {"id": "91722509-8092-43b9-827b-5aa40743a904", "name": "name"}
