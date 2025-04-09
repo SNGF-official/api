@@ -1,7 +1,7 @@
 volumes:
   sngf_api_local_postgres_data: {}
   sngf_api_local_postgres_data_backups: {}
-  
+
 
 services:
   django:

@@ -10,7 +10,7 @@ def test_api_docs_accessible_by_admin(admin_client):
     assert response.status_code == HTTPStatus.OK
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_api_docs_not_accessible_by_anonymous_users(client):
     url = reverse("api-docs")
     response = client.get(url)
