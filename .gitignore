@@ -327,4 +327,3 @@ sngf_api/media/
 .pytest_cache/
 .ipython/
 .env
-.envs/*
