@@ -313,3 +313,4 @@ SPECTACULAR_SETTINGS = {
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
+CORS_ALLOW_ALL_ORIGINS = True
