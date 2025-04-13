@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class DummyModel(models.Model):
@@ -44,6 +45,7 @@ class BaseModel(models.Model):
 
 class Contactable(models.Model):
     name = models.CharField(max_length=100, blank=True)
+    number = PhoneNumberField(null=True)
     customer_email = models.EmailField(blank=True)
 
     class Meta:
