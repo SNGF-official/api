@@ -311,52 +311,43 @@ components:
         - price
         - quantity
         - status
+        - size
       properties:
         id:
           type: string
           format: uuid
         name:
           type: string
-          example: "Basilic"
         category:
           type: string
           enum: [ SEED, PLANT ]
-          example: "SEED"
         type:
           type: string
-          example: "Herbe aromatique"
         description:
           type: string
-          example: "Une plante aromatique populaire pour les plats méditerranéens."
         price:
           type: number
           format: float
-          example: 3.5
         price_per_unit:
           type: number
           format: float
-          example: 1.5
-          description: "Prix par unité (g pour graines, unité pour plantes)"
+          nullable: true
         unit:
           type: string
-          example: "g"
-          description: "Unité de vente (g, sachet, etc.)"
         quantity:
           type: integer
-          example: 100
-          description: "Quantité disponible (en grammes pour graines ou unités pour plantes)"
         size:
           type: string
           enum: [ XS, S, M, L, XL ]
-          description: "Taille de la plante (si catégorie = PLANT)"
         status:
           type: string
           enum: [ ACTIVE, INACTIVE ]
-          example: ACTIVE
-        image_url:
-          type: string
-          format: uri
-          example: "https://example.com/images/basilic.jpg"
+        image_urls:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: Liste des URLs des images associées
 
     Event:
       type: object
@@ -371,22 +362,20 @@ components:
           format: uuid
         title:
           type: string
-          example: "Atelier jardinage printemps"
         description:
           type: string
-          example: "Venez apprendre à planter vos propres légumes."
         date:
           type: string
-          format: date
+          format: date-time
         location:
           type: string
-          example: "Jardin communautaire, Lyon"
         image_url:
           type: string
           format: uri
+          nullable: true
         status:
           type: string
-          enum: [ACTIVE, INACTIVE]
+          enum: [ ACTIVE, INACTIVE ]
 
     Blog:
       type: object
@@ -401,18 +390,27 @@ components:
           format: uuid
         title:
           type: string
-          example: "Comment faire pousser des tomates sur balcon"
+        description:
+          type: string
         content:
           type: string
         author:
           type: string
-          example: "Jean Jardinier"
         published_at:
           type: string
           format: date-time
+          nullable: true
+        image_url:
+          type: string
+          format: uri
+          nullable: true
+        file_id:
+          type: string
+          format: uuid
+          nullable: true
         status:
           type: string
-          enum: [ACTIVE, INACTIVE]
+          enum: [ ACTIVE, INACTIVE ]
 
     Order:
       type: object
@@ -423,26 +421,32 @@ components:
         id:
           type: string
           format: uuid
+        name:
+          type: string
+        customer_email:
+          type: string
+          format: email
+        number:
+          type: string
+          format: phone
         items:
           type: array
           items:
             type: object
-            required: [plant_id, quantity]
+            required: [ plant_id, quantity ]
             properties:
               plant_id:
-                type: integer
+                type: string
+                format: uuid
               quantity:
                 type: integer
-        customer_email:
-          type: string
-          format: email
-          example: "client@example.com"
         submitted_at:
           type: string
           format: date-time
         status:
           type: string
-          enum: [PENDING, CONFIRMED, CANCELLED]
+          enum: [ PENDING, CONFIRMED, CANCELLED ]
+
     Contact:
       type: object
       required:
@@ -453,10 +457,50 @@ components:
           format: uuid
         name:
           type: string
-          example: "John Doe"
         customer_email:
           type: string
-          example: "example@gmail.com"
+          format: email
+        number:
+          type: string
+          format: phone
         message:
           type: string
-          example: "message from John Doe"
+    UploadFile:
+      required:
+        - fileToUpload
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/FileInfo"
+      properties:
+        fileToUpload:
+          type: string
+          format: byte
+          minimum: 1
+    FileInfo:
+      required:
+        - id
+        - name
+        - type
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          minimum: 1
+        name:
+          type: string
+          description: name without extension
+          minimum: 1
+        type:
+          type: string
+          example: jpg
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        fileToUpload:
+          type: string
+          description: url to the file
+          format: uri
+          minimum: 1
+          example: http://localhost:8000/media/files/somefile.txt
