@@ -88,6 +88,8 @@ LOCAL_APPS = [
     "sngf_api.core",
     "sngf_api.contrib",
     "sngf_api.event",
+    "sngf_api.blog",
+    "sngf_api.files",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
