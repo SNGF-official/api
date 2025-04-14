@@ -6,59 +6,69 @@ info:
 
 paths:
   /plants/:
-      get:
-        tags: [Plants]
-        summary: Get list of plants and seeds
-        description: Retrieve a filtered list of active plants and seeds.
-        operationId: GetListPlant
-        parameters:
-          - in: query
-            name: name
-            schema:
-              type: string
-            description: Filter by name
-          - in: query
-            name: type
-            schema:
-              type: string
-            description: Filter by type
-          - in: query
-            name: category
-            schema:
-              type: string
-              enum: [SEED, PLANT]
-            description: Filter by category (SEED or PLANT)
-          - in: query
-            name: size
-            schema:
-              type: string
-              enum: [XS, S, M, L, XL]
-            description: Filter by plant size (for PLANT category)
-          - in: query
-            name: unit
-            schema:
-              type: string
-            description: Filter by unit (for SEED category)
-          - in: query
-            name: status
-            schema:
-              type: string
-              enum: [ACTIVE, INACTIVE]
-            description: Filter by plant status
-          - in: query
-            name: operator_id
-            schema:
-              type: integer
-            description: Filter by operator ID
-        responses:
-          '200':
-            description: Liste des plantes et graines récupérée avec succès.
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Plant'
+    get:
+      tags: [Plants]
+      summary: Get list of plants and seeds
+      description: Retrieve a filtered list of active plants and seeds.
+      operationId: GetListPlant
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Filter by name
+        - in: query
+          name: type
+          schema:
+            type: string
+          description: Filter by type
+        - in: query
+          name: category
+          schema:
+            type: string
+            enum: [SEED, PLANT]
+          description: Filter by category (SEED or PLANT)
+        - in: query
+          name: size
+          schema:
+            type: string
+            enum: [XS, S, M, L, XL]
+          description: Filter by plant size (for PLANT category)
+        - in: query
+          name: unit
+          schema:
+            type: string
+          description: Filter by unit (for SEED category)
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [ACTIVE, INACTIVE]
+          description: Filter by plant status
+        - in: query
+          name: operator_id
+          schema:
+            type: integer
+          description: Filter by operator ID
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of results per page
+      responses:
+        '200':
+          description: Liste des plantes et graines récupérée avec succès.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Plant'
 
   /plants/{id}:
     get:
@@ -134,6 +144,16 @@ paths:
           schema:
             type: integer
           description: Filter by operator ID
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of results per page
       responses:
         '200':
           description: Liste des événements récupérée avec succès.
@@ -212,6 +232,16 @@ paths:
           schema:
             type: integer
           description: Filter by operator ID
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of results per page
       responses:
         '200':
           description: Liste des articles de blog récupérée avec succès.
@@ -273,6 +303,17 @@ paths:
       summary: Get all orders
       description: Retrieve all submitted orders.
       operationId: GetListOrder
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of results per page
       responses:
         '200':
           description: Commandes récupérées avec succès.
@@ -299,6 +340,124 @@ paths:
           description: Commande soumise avec succès. Un email a été envoyé à l'administrateur.
         '400':
           description: Stock insuffisant pour compléter la commande.
+  "/files/{file_id}/download/":
+    get:
+      tags:
+        - "File"
+      operationId: downloadFile
+      summary: Download File
+      parameters:
+        - name: file_id
+          required: true
+          in: path
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              example: attachment; filename="example.txt"
+  "/files/raw/":
+    post:
+      tags:
+        - "File"
+      operationId: uploadRawFile
+      summary: Upload raw File
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadFile"
+      responses:
+        "200":
+          description: Document successfully uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileInfo"
+  "/files/":
+    post:
+      tags:
+        - "File"
+      operationId: uploadFile
+      summary: Upload File
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/FileResource"
+      responses:
+        "200":
+          description: Document uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileInfo"
+    get:
+      tags:
+        - "File"
+      operationId: getFiles
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+
+        - name: type
+          in: query
+          schema:
+            type: string
+
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of results per page
+
+      responses:
+        "200":
+          description: Files list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FileInfo"
+  "/files/{file_id}/":
+    get:
+      tags:
+        - "File"
+      operationId: getFile
+      parameters:
+        - name: file_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Files list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileInfo"
 
 components:
   schemas:
@@ -320,7 +479,7 @@ components:
           type: string
         category:
           type: string
-          enum: [ SEED, PLANT ]
+          enum: [SEED, PLANT]
         type:
           type: string
         description:
@@ -338,10 +497,10 @@ components:
           type: integer
         size:
           type: string
-          enum: [ XS, S, M, L, XL ]
+          enum: [XS, S, M, L, XL]
         status:
           type: string
-          enum: [ ACTIVE, INACTIVE ]
+          enum: [ACTIVE, INACTIVE]
         image_urls:
           type: array
           items:
@@ -375,7 +534,7 @@ components:
           nullable: true
         status:
           type: string
-          enum: [ ACTIVE, INACTIVE ]
+          enum: [ACTIVE, INACTIVE]
 
     Blog:
       type: object
@@ -410,7 +569,7 @@ components:
           nullable: true
         status:
           type: string
-          enum: [ ACTIVE, INACTIVE ]
+          enum: [ACTIVE, INACTIVE]
 
     Order:
       type: object
@@ -433,7 +592,7 @@ components:
           type: array
           items:
             type: object
-            required: [ plant_id, quantity ]
+            required: [plant_id, quantity]
             properties:
               plant_id:
                 type: string
@@ -445,7 +604,7 @@ components:
           format: date-time
         status:
           type: string
-          enum: [ PENDING, CONFIRMED, CANCELLED ]
+          enum: [PENDING, CONFIRMED, CANCELLED]
 
     Contact:
       type: object
@@ -465,6 +624,25 @@ components:
           format: phone
         message:
           type: string
+
+    FileResource:
+      properties:
+        id:
+          type: string
+          minimum: 1
+        name:
+          type: string
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        fileToUpload:
+          type: string
+          minimum: 1
+          format: binary
+          description: The file to be uploaded
+
     UploadFile:
       required:
         - fileToUpload
@@ -476,6 +654,7 @@ components:
           type: string
           format: byte
           minimum: 1
+
     FileInfo:
       required:
         - id
