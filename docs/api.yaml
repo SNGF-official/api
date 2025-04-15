@@ -672,7 +672,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Image'
-          description: Liste des images associées
+          description: Listes des images associées
 
     Seed:
       type: object
