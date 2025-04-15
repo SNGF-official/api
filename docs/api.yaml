@@ -5,12 +5,12 @@ info:
   description: API for managing plants, seeds, events, blogs, testimonials, and orders for the SNGF website
 
 paths:
-  /plants/:
+  /seeds/:
     get:
-      tags: [Plants]
-      summary: Get list of plants and seeds
-      description: Retrieve a filtered list of active plants and seeds.
-      operationId: GetListPlant
+      tags: [Seeds]
+      summary: Get list of seeds
+      description: Retrieve a filtered list of active seeds.
+      operationId: getListSeed
       parameters:
         - in: query
           name: name
@@ -18,38 +18,21 @@ paths:
             type: string
           description: Filter by name
         - in: query
-          name: type
-          schema:
-            type: string
-          description: Filter by type
-        - in: query
           name: category
           schema:
             type: string
-            enum: [SEED, PLANT]
-          description: Filter by category (SEED or PLANT)
-        - in: query
-          name: size
-          schema:
-            type: string
-            enum: [XS, S, M, L, XL]
-          description: Filter by plant size (for PLANT category)
+          description: Filter by category
         - in: query
           name: unit
           schema:
             type: string
-          description: Filter by unit (for SEED category)
+          description: Filter by unit
         - in: query
           name: status
           schema:
             type: string
             enum: [ACTIVE, INACTIVE]
-          description: Filter by plant status
-        - in: query
-          name: operator_id
-          schema:
-            type: integer
-          description: Filter by operator ID
+          description: Filter by seed status
         - in: query
           name: page
           schema:
@@ -62,20 +45,37 @@ paths:
           description: Number of results per page
       responses:
         '200':
-          description: Liste des plantes et graines récupérée avec succès.
+          description: Liste des graines récupérée avec succès.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Plant'
+                  $ref: '#/components/schemas/Seed'
 
-  /plants/{id}:
+    post:
+      tags: [Seeds]
+      summary: Add a new seed
+      description: Add a new seed to the inventory.
+      operationId: createSeed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Seed'
+      responses:
+        '201':
+          description: Seed created successfully.
+        '400':
+          description: Invalid data provided.
+
+  /seeds/{id}:
     get:
-      tags: [Plants]
-      summary: Get plant or seed by ID
-      description: Retrieve a single plant or seed by its ID.
-      operationId: GetPlantByID
+      tags: [Seeds]
+      summary: Get seed by ID
+      description: Retrieve a single seed by its ID.
+      operationId: getSeedByID
       parameters:
         - in: path
           name: id
@@ -84,19 +84,130 @@ paths:
             type: integer
       responses:
         '200':
-          description: Détails de la plante ou graine récupérés avec succès.
+          description: Détails de la graine récupérée avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Seed'
+        '404':
+          description: Graine non trouvée.
+
+    put:
+      tags: [Seeds]
+      summary: Update a seed
+      description: Update an existing seed's information.
+      operationId: updateSeed
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Seed'
+      responses:
+        '200':
+          description: Graine mise à jour avec succès.
+        '400':
+          description: Données invalides fournies.
+
+  /plants/:
+    get:
+      tags: [Plants]
+      summary: Get list of plants
+      description: Retrieve a filtered list of active plants.
+      operationId: getListPlant
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Filter by name
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: Filter by category
+        - in: query
+          name: size
+          schema:
+            type: string
+            enum: [PM, MM, GM]
+          description: Filter by plant size
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [ACTIVE, INACTIVE]
+          description: Filter by plant status
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of results per page
+      responses:
+        '200':
+          description: Liste des plantes récupérée avec succès.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Plant'
+
+    post:
+      tags: [Plants]
+      summary: Add a new plant
+      description: Add a new plant to the inventory.
+      operationId: createPlant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Plant'
+      responses:
+        '201':
+          description: Plant created successfully.
+        '400':
+          description: Invalid data provided.
+
+  /plants/{id}:
+    get:
+      tags: [Plants]
+      summary: Get plant by ID
+      description: Retrieve a single plant by its ID.
+      operationId: getPlantByID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails de la plante récupérés avec succès.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Plant'
         '404':
-          description: Plante ou graine non trouvée.
+          description: Plante non trouvée.
 
     put:
       tags: [Plants]
-      summary: Update a plant or seed
-      description: Update an existing plant or seed's information.
-      operationId: CrupdatePlant
+      summary: Update a plant
+      description: Update an existing plant's information.
+      operationId: updatePlant
       parameters:
         - in: path
           name: id
@@ -111,7 +222,7 @@ paths:
               $ref: '#/components/schemas/Plant'
       responses:
         '200':
-          description: Plante ou graine mise à jour avec succès.
+          description: Plante mise à jour avec succès.
         '400':
           description: Données invalides fournies.
 
@@ -120,7 +231,7 @@ paths:
       tags: [Events]
       summary: Get list of events
       description: Retrieve a filtered list of events.
-      operationId: GetListEvent
+      operationId: getListEvent
       parameters:
         - in: query
           name: keyword
@@ -139,11 +250,6 @@ paths:
             type: string
             enum: [ACTIVE, INACTIVE]
           description: Filter by event status
-        - in: query
-          name: operator_id
-          schema:
-            type: integer
-          description: Filter by operator ID
         - in: query
           name: page
           schema:
@@ -169,7 +275,7 @@ paths:
       tags: [Events]
       summary: Get event by ID
       description: Retrieve a single event by its ID.
-      operationId: GetEventByID
+      operationId: getEventByID
       parameters:
         - in: path
           name: id
@@ -190,7 +296,7 @@ paths:
       tags: [Events]
       summary: Update an event
       description: Update an existing event's information.
-      operationId: CrupdateEvent
+      operationId: updateEvent
       parameters:
         - in: path
           name: id
@@ -209,12 +315,29 @@ paths:
         '400':
           description: Données invalides fournies.
 
+    delete:
+      tags: [Events]
+      summary: Delete an event
+      description: Delete an event by its ID.
+      operationId: deleteEvent
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Event deleted successfully.
+        '404':
+          description: Event not found.
+
   /blogs/:
     get:
       tags: [Blogs]
       summary: Get list of blogs
       description: Retrieve a filtered list of blog articles.
-      operationId: GetListBlog
+      operationId: getListBlog
       parameters:
         - in: query
           name: keyword
@@ -227,11 +350,6 @@ paths:
             type: string
             enum: [ACTIVE, INACTIVE]
           description: Filter by blog status
-        - in: query
-          name: operator_id
-          schema:
-            type: integer
-          description: Filter by operator ID
         - in: query
           name: page
           schema:
@@ -252,12 +370,29 @@ paths:
                 items:
                   $ref: '#/components/schemas/Blog'
 
+    post:
+      tags: [Blogs]
+      summary: Add a new blog
+      description: Add a new blog article.
+      operationId: createBlog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Blog'
+      responses:
+        '201':
+          description: Blog created successfully.
+        '400':
+          description: Invalid data provided.
+
   /blogs/{id}:
     get:
       tags: [Blogs]
       summary: Get blog by ID
       description: Retrieve a single blog article by its ID.
-      operationId: GetBlogByID
+      operationId: getBlogByID
       parameters:
         - in: path
           name: id
@@ -278,7 +413,7 @@ paths:
       tags: [Blogs]
       summary: Update a blog
       description: Update an existing blog article.
-      operationId: CrupdateBlog
+      operationId: updateBlog
       parameters:
         - in: path
           name: id
@@ -297,12 +432,29 @@ paths:
         '400':
           description: Données invalides fournies.
 
+    delete:
+      tags: [Blogs]
+      summary: Delete a blog
+      description: Delete a blog article by its ID.
+      operationId: deleteBlog
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Blog deleted successfully.
+        '404':
+          description: Blog not found.
+
   /orders/:
     get:
       tags: [Orders]
       summary: Get all orders
       description: Retrieve all submitted orders.
-      operationId: GetListOrder
+      operationId: getListOrder
       parameters:
         - in: query
           name: page
@@ -328,7 +480,7 @@ paths:
       tags: [Orders]
       summary: Submit an order (no payment)
       description: Submit an order. If items are available in stock, a notification email will be sent to the admin.
-      operationId: CrupdateOrder
+      operationId: crupdateOrder
       requestBody:
         required: true
         content:
@@ -340,6 +492,7 @@ paths:
           description: Commande soumise avec succès. Un email a été envoyé à l'administrateur.
         '400':
           description: Stock insuffisant pour compléter la commande.
+
   "/files/{file_id}/download/":
     get:
       tags:
@@ -461,16 +614,28 @@ paths:
 
 components:
   schemas:
-    Plant:
+    Image:
+      type: object
+      required:
+        - id
+        - altText
+        - image
+      properties:
+        id:
+          type: string
+          format: uuid
+        altText:
+          type: string
+        image:
+          type: string
+          format: uri
+
+    BaseProduct:
       type: object
       required:
         - id
         - name
-        - category
-        - price
-        - quantity
         - status
-        - size
       properties:
         id:
           type: string
@@ -479,34 +644,59 @@ components:
           type: string
         category:
           type: string
-          enum: [SEED, PLANT]
-        type:
-          type: string
+          enum:
+            - AGROFORESTIERES
+            - ENDEMIQUES_AUTOCHTONES
+            - EXOTIQUES_REBOISEMENT
+            - ORNEMENTALES
+            - EMBROUSSAILLEMENTS
         description:
-          type: string
-        price:
-          type: number
-          format: float
-        price_per_unit:
-          type: number
-          format: float
-          nullable: true
-        unit:
           type: string
         quantity:
           type: integer
-        size:
-          type: string
-          enum: [XS, S, M, L, XL]
         status:
           type: string
           enum: [ACTIVE, INACTIVE]
-        image_urls:
+        images:
           type: array
           items:
-            type: string
-            format: uri
-          description: Liste des URLs des images associées
+            $ref: '#/components/schemas/Image'
+          description: Liste des images associées
+
+    Seed:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseProduct'
+      required:
+        - pricePerKilo
+      properties:
+        pricePerKilo:
+          type: number
+          format: float
+
+    Plant:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseProduct'
+      required:
+        - size
+        - prices
+      properties:
+        size:
+          type: string
+          enum: [PM, MM, GM]
+        prices:
+          type: object
+          properties:
+            PM:
+              type: number
+              format: float
+            MM:
+              type: number
+              format: float
+            GM:
+              type: number
+              format: float
 
     Event:
       type: object
@@ -528,7 +718,7 @@ components:
           format: date-time
         location:
           type: string
-        image_url:
+        imageUrl:
           type: string
           format: uri
           nullable: true
@@ -555,21 +745,38 @@ components:
           type: string
         author:
           type: string
-        published_at:
+        publishedAt:
           type: string
           format: date-time
           nullable: true
-        image_url:
+        imageUrl:
           type: string
           format: uri
           nullable: true
-        file_id:
+        fileId:
           type: string
           format: uuid
           nullable: true
         status:
           type: string
           enum: [ACTIVE, INACTIVE]
+
+    OrderItem:
+      type: object
+      required:
+        - quantity
+      properties:
+        plantId:
+          type: string
+          format: uuid
+        seedId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+      oneOf:
+        - required: [ plantId ]
+        - required: [ seedId ]
 
     Order:
       type: object
@@ -582,7 +789,7 @@ components:
           format: uuid
         name:
           type: string
-        customer_email:
+        customerEmail:
           type: string
           format: email
         number:
@@ -591,21 +798,13 @@ components:
         items:
           type: array
           items:
-            type: object
-            required: [plant_id, quantity]
-            properties:
-              plant_id:
-                type: string
-                format: uuid
-              quantity:
-                type: integer
-        submitted_at:
+            $ref: '#/components/schemas/OrderItem'
+        submittedAt:
           type: string
           format: date-time
         status:
           type: string
-          enum: [PENDING, CONFIRMED, CANCELLED]
-
+          enum: [ PENDING, CONFIRMED, CANCELLED ]
     Contact:
       type: object
       required:
@@ -616,7 +815,7 @@ components:
           format: uuid
         name:
           type: string
-        customer_email:
+        customerEmail:
           type: string
           format: email
         number:
