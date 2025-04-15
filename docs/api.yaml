@@ -7,7 +7,7 @@ info:
 paths:
   /seeds/:
     get:
-      tags: [Seeds]
+      tags: [ Seeds ]
       summary: Get list of seeds
       description: Retrieve a filtered list of active seeds.
       operationId: getListSeed
@@ -21,17 +21,18 @@ paths:
           name: category
           schema:
             type: string
+            enum:
+              - AGROFORESTIERES
+              - ENDEMIQUES_AUTOCHTONES
+              - EXOTIQUES_REBOISEMENT
+              - ORNEMENTALES
+              - EMBROUSSAILLEMENTS
           description: Filter by category
-        - in: query
-          name: unit
-          schema:
-            type: string
-          description: Filter by unit
         - in: query
           name: status
           schema:
             type: string
-            enum: [ACTIVE, INACTIVE]
+            enum: [ ACTIVE, INACTIVE ]
           description: Filter by seed status
         - in: query
           name: page
@@ -54,7 +55,7 @@ paths:
                   $ref: '#/components/schemas/Seed'
 
     post:
-      tags: [Seeds]
+      tags: [ Seeds ]
       summary: Add a new seed
       description: Add a new seed to the inventory.
       operationId: createSeed
@@ -72,7 +73,7 @@ paths:
 
   /seeds/{id}:
     get:
-      tags: [Seeds]
+      tags: [ Seeds ]
       summary: Get seed by ID
       description: Retrieve a single seed by its ID.
       operationId: getSeedByID
@@ -81,7 +82,8 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Détails de la graine récupérée avec succès.
@@ -93,7 +95,7 @@ paths:
           description: Graine non trouvée.
 
     put:
-      tags: [Seeds]
+      tags: [ Seeds ]
       summary: Update a seed
       description: Update an existing seed's information.
       operationId: updateSeed
@@ -102,7 +104,8 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -117,7 +120,7 @@ paths:
 
   /plants/:
     get:
-      tags: [Plants]
+      tags: [ Plants ]
       summary: Get list of plants
       description: Retrieve a filtered list of active plants.
       operationId: getListPlant
@@ -131,18 +134,24 @@ paths:
           name: category
           schema:
             type: string
+            enum:
+              - AGROFORESTIERES
+              - ENDEMIQUES_AUTOCHTONES
+              - EXOTIQUES_REBOISEMENT
+              - ORNEMENTALES
+              - EMBROUSSAILLEMENTS
           description: Filter by category
         - in: query
           name: size
           schema:
             type: string
-            enum: [PM, MM, GM]
+            enum: [ PM, MM, GM ]
           description: Filter by plant size
         - in: query
           name: status
           schema:
             type: string
-            enum: [ACTIVE, INACTIVE]
+            enum: [ ACTIVE, INACTIVE ]
           description: Filter by plant status
         - in: query
           name: page
@@ -165,7 +174,7 @@ paths:
                   $ref: '#/components/schemas/Plant'
 
     post:
-      tags: [Plants]
+      tags: [ Plants ]
       summary: Add a new plant
       description: Add a new plant to the inventory.
       operationId: createPlant
@@ -183,7 +192,7 @@ paths:
 
   /plants/{id}:
     get:
-      tags: [Plants]
+      tags: [ Plants ]
       summary: Get plant by ID
       description: Retrieve a single plant by its ID.
       operationId: getPlantByID
@@ -192,7 +201,8 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Détails de la plante récupérés avec succès.
@@ -204,7 +214,7 @@ paths:
           description: Plante non trouvée.
 
     put:
-      tags: [Plants]
+      tags: [ Plants ]
       summary: Update a plant
       description: Update an existing plant's information.
       operationId: updatePlant
@@ -213,7 +223,8 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -661,7 +672,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Image'
-          description: Liste des images associées
+          description: Listes des images associées
 
     Seed:
       type: object
@@ -686,17 +697,16 @@ components:
           type: string
           enum: [PM, MM, GM]
         prices:
-          type: object
-          properties:
-            PM:
-              type: number
-              format: float
-            MM:
-              type: number
-              format: float
-            GM:
-              type: number
-              format: float
+          type: array
+          items:
+            type: object
+            properties:
+              size:
+                type: string
+                enum: [PM, MM, GM]
+              price:
+                type: number
+                format: float
 
     Event:
       type: object
@@ -853,6 +863,7 @@ components:
           type: string
           format: byte
           minimum: 1
+
 
     FileInfo:
       required:
