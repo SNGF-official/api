@@ -4,11 +4,15 @@ from sngf_api.plant.models import Plant
 from sngf_api.plant.models import PlantImage
 from sngf_api.plant.models import PlantSizePrice
 
+# ruff : noqa: N815
+
 
 class ImageSerializer(serializers.ModelSerializer):
+    altText = serializers.CharField(source="alt_text")
+
     class Meta:
         model = PlantImage
-        fields = ["id", "alt_text", "image"]
+        fields = ["id", "altText", "image"]
         read_only_fields = ["id"]
 
 
