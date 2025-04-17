@@ -4,6 +4,7 @@ from .models import Plant
 from .models import PlantImage
 from .models import PlantSizePrice
 from .models import Seed
+from .models import SeedImage
 
 
 class PlantImageInline(admin.TabularInline):
@@ -38,8 +39,21 @@ class PlantSizePriceAdmin(admin.ModelAdmin):
     search_fields = ("plant__name",)
 
 
+class SeedImageInline(admin.TabularInline):
+    model = SeedImage
+    extra = 1
+
+
+@admin.register(SeedImage)
+class SeedImageAdmin(admin.ModelAdmin):
+    list_display = ("seed", "alt_text", "image")
+    list_filter = ("seed",)
+    search_fields = ("alt_text",)
+
+
 @admin.register(Seed)
 class SeedAdmin(admin.ModelAdmin):
     list_display = ("name", "category", "quantity", "status", "price_per_kilo")
     list_filter = ("category", "status")
     search_fields = ("name", "description")
+    inlines = [SeedImageInline]

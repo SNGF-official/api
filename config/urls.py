@@ -33,6 +33,8 @@ urlpatterns += [
     path("api/", include("config.api_router")),
     path("", include("sngf_api.plant.api.urls"), name="plants"),
     path("", include("sngf_api.blog.api.urls"), name="blogs"),
+    path("", include("sngf_api.event.api.urls"), name="events"),
+    path("", include("sngf_api.files.urls"), name="files"),
     # DRF auth token
     path("api/auth-token/", obtain_auth_token),
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
@@ -71,3 +73,6 @@ if settings.DEBUG:
             path("__debug__/", include(debug_toolbar.urls)),
             *urlpatterns,
         ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
