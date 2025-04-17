@@ -37,6 +37,37 @@ class PlantImage(models.Model):
         return f"Image de {self.plant.name}"
 
 
+class SeedImage(models.Model):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        help_text="Identifiant unique de l'image de la graine."
+        "Il est généré automatiquement et ne peut pas être modifié.",
+    )
+    seed = models.ForeignKey(
+        "Seed",
+        related_name="images",
+        on_delete=models.CASCADE,
+        help_text="La graîne à laquelle cette image est associée.",
+    )
+    image = models.ImageField(
+        upload_to="seeds/gallery/",
+        validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])],
+        help_text="Le fichier image de la plante."
+        "Les formats supportés sont JPG, JPEG, PNG et WEBP.",
+    )
+    alt_text = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Texte alternatif pour l'image,"
+        "important pour l'accessibilité et le SEO.",
+    )
+
+    def __str__(self):
+        return f"Image de {self.seed.name}"
+
+
 class BaseProduct(models.Model):
     class CategoryChoices(models.TextChoices):
         AGROFORESTIERES = "AGROFORESTIERES", "Agroforestières"
