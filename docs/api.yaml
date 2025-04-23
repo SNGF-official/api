@@ -837,6 +837,7 @@ components:
         id:
           type: string
           format: uuid
+          readOnly: true
         name:
           type: string
         customerEmail:
@@ -845,6 +846,7 @@ components:
         number:
           type: string
           format: phone
+          description: Numéro de téléphone du contact pour la commande
         items:
           type: array
           items:
@@ -852,9 +854,11 @@ components:
         submittedAt:
           type: string
           format: date-time
+          readOnly: true
         status:
           type: string
           enum: [ PENDING, CONFIRMED, CANCELLED ]
+          readOnly: true
     Contact:
       type: object
       required:
