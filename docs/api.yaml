@@ -461,48 +461,75 @@ paths:
           description: Blog not found.
 
   /orders/:
-    get:
-      tags: [Orders]
-      summary: Get all orders
-      description: Retrieve all submitted orders.
-      operationId: getListOrder
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-          description: Page number
-        - in: query
-          name: pageSize
-          schema:
-            type: integer
-          description: Number of results per page
-      responses:
-        '200':
-          description: Commandes récupérées avec succès.
+      get:
+        tags: [Orders]
+        summary: Get list of all orders
+        description: Retrieve a paginated list of all orders.
+        operationId: getListOrder
+        parameters:
+          - in: query
+            name: page
+            schema:
+              type: integer
+            description: Page number
+          - in: query
+            name: pageSize
+            schema:
+              type: integer
+            description: Number of results per page
+        responses:
+          '200':
+            description: Liste des commandes récupérée avec succès.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Order'
+
+      put:
+        tags: [Orders]
+        summary: Create or update an order
+        description: Create a new order or update an existing order. The operation is idempotent.
+        operationId: putOrder
+        requestBody:
+          required: true
           content:
             application/json:
               schema:
-                type: array
-                items:
+                $ref: '#/components/schemas/Order'
+        responses:
+          '200':
+            description: Commande créée ou mise à jour avec succès.
+            content:
+              application/json:
+                schema:
                   $ref: '#/components/schemas/Order'
+          '400':
+            description: Données de commande invalides.
 
-    put:
+  /orders/{id}:
+    get:
       tags: [Orders]
-      summary: Submit an order (no payment)
-      description: Submit an order. If items are available in stock, a notification email will be sent to the admin.
-      operationId: crupdateOrder
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Order'
+      summary: Get order by ID
+      description: Retrieve details of a specific order by its ID.
+      operationId: getOrderById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
-          description: Commande soumise avec succès. Un email a été envoyé à l'administrateur.
-        '400':
-          description: Stock insuffisant pour compléter la commande.
+          description: Détails de la commande récupérés avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Commande non trouvée.
 
   "/files/{file_id}/download/":
     get:
@@ -695,7 +722,7 @@ components:
       properties:
         size:
           type: string
-          enum: [PM, MM, GM]
+          enum: [PM, MM, GM, EX]
         prices:
           type: array
           items:
@@ -703,7 +730,7 @@ components:
             properties:
               size:
                 type: string
-                enum: [PM, MM, GM]
+                enum: [PM, MM, GM, EX]
               price:
                 type: number
                 format: float
@@ -774,19 +801,32 @@ components:
     OrderItem:
       type: object
       required:
+        - productId
+        - type
         - quantity
       properties:
-        plantId:
+        productId:
+          type: integer
+          description: ID du produit (plant ou seed)
+        type:
           type: string
-          format: uuid
-        seedId:
-          type: string
-          format: uuid
+          enum: [ PLANT, SEED ]
+          description: Type de produit
         quantity:
           type: integer
-      oneOf:
-        - required: [ plantId ]
-        - required: [ seedId ]
+          description: Quantité commandée
+        unit:
+          type: string
+          nullable: true
+          description: Unité de la quantité (e.g., 'unit', 'kg')
+        size:
+          type: string
+          nullable: true
+          description: Taille de la plante (si applicable)
+        price:
+          type: number
+          format: float
+          description: Prix unitaire de l'article au moment de la commande
 
     Order:
       type: object
@@ -797,6 +837,7 @@ components:
         id:
           type: string
           format: uuid
+          readOnly: true
         name:
           type: string
         customerEmail:
@@ -805,6 +846,7 @@ components:
         number:
           type: string
           format: phone
+          description: Numéro de téléphone du contact pour la commande
         items:
           type: array
           items:
@@ -812,9 +854,11 @@ components:
         submittedAt:
           type: string
           format: date-time
+          readOnly: true
         status:
           type: string
           enum: [ PENDING, CONFIRMED, CANCELLED ]
+          readOnly: true
     Contact:
       type: object
       required:
