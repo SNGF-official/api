@@ -1,16 +1,21 @@
 import rest_framework.generics as drf_generics
 from rest_framework.permissions import AllowAny
 
+from sngf_api.core import generics
 from sngf_api.order.models import Order
 
 from .serializers import OrderCreateSerializer
 from .serializers import OrderSerializer
 
 
-class OrderListView(drf_generics.ListAPIView):
+class OrderListView(generics.ListCreateUpdateApiView):
     queryset = Order.objects.all()
-    serializer_class = OrderSerializer
     permission_classes = [AllowAny]
+
+    def get_serializer_class(self):
+        if self.request.method == "PUT":
+            return OrderCreateSerializer
+        return OrderSerializer
 
 
 class OrderDetailView(drf_generics.RetrieveAPIView):
