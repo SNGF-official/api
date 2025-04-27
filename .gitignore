@@ -40,6 +40,7 @@ htmlcov/
 .tox/
 .coverage
 .idea
+.idea/**/
 .coverage.*
 .cache
 nosetests.xml
