@@ -6,7 +6,15 @@ from sngf_api.order.models import OrderItem
 
 
 class OrderItemSerializer(ModelSerializer):
-    productId = serializers.IntegerField()  # noqa: N815
+    productId = serializers.UUIDField(source="product_id")  # noqa: N815
+
+    class Meta:
+        model = OrderItem
+        fields = ["productId", "type", "quantity", "unit", "size", "price"]
+
+
+class OrderCreateItemSerializer(ModelSerializer):
+    product_id = serializers.UUIDField()
     type = serializers.ChoiceField(choices=["PLANT", "SEED"])
     quantity = serializers.IntegerField()
     unit = serializers.CharField(allow_null=True, required=False)
@@ -15,7 +23,7 @@ class OrderItemSerializer(ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ["productId", "type", "quantity", "unit", "size", "price"]
+        fields = ["product_id", "type", "quantity", "unit", "size", "price"]
 
 
 class OrderSerializer(ModelSerializer):
@@ -36,11 +44,18 @@ class OrderSerializer(ModelSerializer):
 
 
 class OrderCreateSerializer(ModelSerializer):
-    items = OrderItemSerializer(many=True)
+    items = OrderCreateItemSerializer(many=True)
 
     class Meta:
         model = Order
-        fields = ["status", "items", "contact_name", "contact_email", "contact_number"]
+        fields = [
+            "status",
+            "items",
+            "contact_name",
+            "contact_email",
+            "contact_number",
+            "submitted_at",
+        ]
 
     def create(self, validated_data):
         items_data = validated_data.pop("items", [])
@@ -51,9 +66,8 @@ class OrderCreateSerializer(ModelSerializer):
             contact_email=validated_data.get("contact_email"),
             contact_number=validated_data.get("contact_number"),
         )
-
         for item_data in items_data:
-            product_id = item_data.get("productId")
+            product_id = item_data.get("product_id")
             quantity = item_data.get("quantity", 1)
             item_type = item_data.get("type", "PLANT")
             unit = item_data.get("unit", "")
@@ -64,14 +78,22 @@ class OrderCreateSerializer(ModelSerializer):
                 msg = "Le champ 'productId' est obligatoire."
                 raise serializers.ValidationError(msg)
 
-            OrderItem.objects.create(
-                order=order,
-                product_id=product_id,
-                quantity=quantity,
-                type=item_type,
-                unit=unit,
-                size=size,
-                price=price,
-            )
+            existing_item = OrderItem.objects.filter(
+                order=order, product_id=product_id, type=item_type, size=size
+            ).first()
+
+            if existing_item:
+                existing_item.quantity += quantity
+                existing_item.save()
+            else:
+                OrderItem.objects.create(
+                    order=order,
+                    product_id=product_id,
+                    quantity=quantity,
+                    type=item_type,
+                    unit=unit,
+                    size=size,
+                    price=price,
+                )
 
         return order

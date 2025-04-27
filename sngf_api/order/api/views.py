@@ -11,11 +11,7 @@ from .serializers import OrderSerializer
 class OrderListView(generics.ListCreateUpdateApiView):
     queryset = Order.objects.all()
     permission_classes = [AllowAny]
-
-    def get_serializer_class(self):
-        if self.request.method == "PUT":
-            return OrderCreateSerializer
-        return OrderSerializer
+    serializer_class = OrderSerializer
 
 
 class OrderDetailView(drf_generics.RetrieveAPIView):
