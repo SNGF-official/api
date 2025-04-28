@@ -14,28 +14,7 @@ class OrderListView(generics.ListCreateUpdateApiView):
     serializer_class = OrderSerializer
 
 
-class OrderDetailView(drf_generics.RetrieveAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
-    permission_classes = [AllowAny]
-    lookup_field = "id"
-
-
 class OrderCreateView(drf_generics.CreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderCreateSerializer
     permission_classes = [AllowAny]
-
-
-class OrderUpdateView(drf_generics.UpdateAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderCreateSerializer
-    permission_classes = [AllowAny]
-    lookup_field = "id"
-
-
-class OrderDeleteView(drf_generics.DestroyAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
-    permission_classes = [AllowAny]
-    lookup_field = "id"
