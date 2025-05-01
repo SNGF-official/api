@@ -1,12 +1,11 @@
-import rest_framework.generics as drf_spectacular
-from django.utils.dateparse import parse_date
+from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from sngf_api.blog.api.mixins import BlogFilterMixin
 from sngf_api.blog.api.serializers import BlogSerializer
 from sngf_api.blog.models import Blog
-from sngf_api.core.models import Status
 
 
 class FlatListPagination(PageNumberPagination):
@@ -19,35 +18,37 @@ class FlatListPagination(PageNumberPagination):
         return Response(data)
 
 
-class GetListBlogView(drf_spectacular.ListAPIView):
-    queryset = Blog.objects.filter(status=Status.STATUS.ACTIVE)
+class GetListBlogView(BlogFilterMixin, generics.ListAPIView):
     serializer_class = BlogSerializer
     permission_classes = [AllowAny]
     pagination_class = FlatListPagination
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        keyword = self.request.query_params.get("keyword")
-        status = self.request.query_params.get("status")
-        published_date = self.request.query_params.get("publishedAt")
-
-        if keyword:
-            queryset = queryset.filter(title__icontains=keyword)
-        if status:
-            queryset = queryset.filter(status=status)
-        if published_date:
-            date = parse_date(published_date)
-            if date:
-                queryset = queryset.filter(published_at__date=date)
-
-        return (
-            queryset.filter(status=Status.STATUS.ACTIVE)
-            .distinct()
-            .order_by("-published_at")
-        )
+        queryset = Blog.objects.all()
+        return self.filter_queryset_by_params(queryset)
 
 
-class GetBlogByIdView(drf_spectacular.RetrieveAPIView):
+class GetBlogByIdView(generics.RetrieveAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer
+    permission_classes = [AllowAny]
+    lookup_field = "id"
+
+
+class CreateBlogView(generics.CreateAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer
+    permission_classes = [AllowAny]
+
+
+class UpdateBlogView(generics.UpdateAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer
+    permission_classes = [AllowAny]
+    lookup_field = "id"
+
+
+class DeleteBlogView(generics.DestroyAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
     permission_classes = [AllowAny]

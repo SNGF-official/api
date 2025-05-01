@@ -1,11 +1,10 @@
 import rest_framework.generics as drf_spectacular
 from django.db.models import Q
-from django.utils.dateparse import parse_datetime
+from django.utils.dateparse import parse_date
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from sngf_api.core.models import Status
 from sngf_api.event.api.serializers import EventSerializer
 from sngf_api.event.models import EventModel
 
@@ -45,10 +44,10 @@ class GetListEventView(drf_spectacular.ListAPIView):
 
         if date_str:
             try:
-                date = parse_datetime(date_str)
+                date = parse_date(date_str)
                 if date:
-                    queryset = queryset.filter(date__date=date.date())
+                    queryset = queryset.filter(date__date=date)
             except (ValueError, TypeError):
                 pass
 
-        return queryset.filter(status=Status.STATUS.ACTIVE)
+        return queryset
