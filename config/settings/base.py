@@ -232,6 +232,7 @@ EMAIL_BACKEND = env(
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-timeout
 EMAIL_TIMEOUT = 5
+ORDER_NOTIFICATION_EMAILS = ["rabenaly3@gmail.com"]
 
 # ADMIN
 # ------------------------------------------------------------------------------
