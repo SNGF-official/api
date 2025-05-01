@@ -9,14 +9,19 @@ paths:
     get:
       tags: [ Seeds ]
       summary: Get list of seeds
-      description: Retrieve a filtered list of active seeds.
+      description: Retrieve a filtered list of active seeds with support for keyword search and pagination.
       operationId: getListSeed
       parameters:
         - in: query
           name: name
           schema:
             type: string
-          description: Filter by name
+          description: Filter by exact name
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: Keyword search in name or description
         - in: query
           name: category
           schema:
@@ -27,13 +32,29 @@ paths:
               - EXOTIQUES_REBOISEMENT
               - ORNEMENTALES
               - EMBROUSSAILLEMENTS
-          description: Filter by category
+          description: Filter by seed category
         - in: query
-          name: status
+          name: minQuantity
           schema:
-            type: string
-            enum: [ ACTIVE, INACTIVE ]
-          description: Filter by seed status
+            type: integer
+          description: Minimum available quantity
+        - in: query
+          name: maxQuantity
+          schema:
+            type: integer
+          description: Maximum available quantity
+        - in: query
+          name: minPrice
+          schema:
+            type: number
+            format: float
+          description: Minimum price per kilo
+        - in: query
+          name: maxPrice
+          schema:
+            type: number
+            format: float
+          description: Maximum price per kilo
         - in: query
           name: page
           schema:
@@ -122,14 +143,19 @@ paths:
     get:
       tags: [ Plants ]
       summary: Get list of plants
-      description: Retrieve a filtered list of active plants.
+      description: Retrieve a filtered list of active plants with support for keyword search and pagination.
       operationId: getListPlant
       parameters:
         - in: query
           name: name
           schema:
             type: string
-          description: Filter by name
+          description: Filter by exact name
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: Keyword search in name or description
         - in: query
           name: category
           schema:
@@ -140,19 +166,35 @@ paths:
               - EXOTIQUES_REBOISEMENT
               - ORNEMENTALES
               - EMBROUSSAILLEMENTS
-          description: Filter by category
+          description: Filter by plant category
         - in: query
           name: size
           schema:
             type: string
-            enum: [ PM, MM, GM, EX ]
+            enum: [ PM, MM, GM, EX, UN ]
           description: Filter by plant size
         - in: query
-          name: status
+          name: minQuantity
           schema:
-            type: string
-            enum: [ ACTIVE, INACTIVE ]
-          description: Filter by plant status
+            type: integer
+          description: Minimum available quantity
+        - in: query
+          name: maxQuantity
+          schema:
+            type: integer
+          description: Maximum available quantity
+        - in: query
+          name: minPrice
+          schema:
+            type: number
+            format: float
+          description: Minimum price (any size)
+        - in: query
+          name: maxPrice
+          schema:
+            type: number
+            format: float
+          description: Maximum price (any size)
         - in: query
           name: page
           schema:
@@ -239,28 +281,22 @@ paths:
 
   /events/:
     get:
-      tags: [Events]
+      tags: [ Events ]
       summary: Get list of events
-      description: Retrieve a filtered list of events.
+      description: Retrieve a filtered list of events with support for keyword search, date and pagination.
       operationId: getListEvent
       parameters:
         - in: query
           name: keyword
           schema:
             type: string
-          description: Filter by keyword in title or description
+          description: Keyword search in title or description
         - in: query
           name: date
           schema:
             type: string
             format: date
-          description: Filter by date
-        - in: query
-          name: status
-          schema:
-            type: string
-            enum: [ACTIVE, INACTIVE]
-          description: Filter by event status
+          description: Filter by specific event date
         - in: query
           name: page
           schema:
@@ -345,22 +381,21 @@ paths:
 
   /blogs/:
     get:
-      tags: [Blogs]
+      tags: [ Blogs ]
       summary: Get list of blogs
-      description: Retrieve a filtered list of blog articles.
+      description: Retrieve a filtered list of blog articles with support for keyword search, author and pagination.
       operationId: getListBlog
       parameters:
         - in: query
           name: keyword
           schema:
             type: string
-          description: Filter by keyword in title or content
+          description: Keyword search in title or content
         - in: query
-          name: status
+          name: author
           schema:
             type: string
-            enum: [ACTIVE, INACTIVE]
-          description: Filter by blog status
+          description: Filter by author's name
         - in: query
           name: page
           schema:
@@ -381,84 +416,47 @@ paths:
                 items:
                   $ref: '#/components/schemas/Blog'
 
-    post:
-      tags: [Blogs]
-      summary: Add a new blog
-      description: Add a new blog article.
-      operationId: createBlog
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Blog'
-      responses:
-        '201':
-          description: Blog created successfully.
-        '400':
-          description: Invalid data provided.
-
-  /blogs/{id}:
+  /files/:
     get:
-      tags: [Blogs]
-      summary: Get blog by ID
-      description: Retrieve a single blog article by its ID.
-      operationId: getBlogByID
+      tags: [ File ]
+      summary: Get list of files
+      description: Retrieve a filtered list of uploaded files with support for keyword search and pagination.
+      operationId: getFiles
       parameters:
-        - in: path
-          name: id
-          required: true
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: Keyword search in file name
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Exact file name
+        - in: query
+          name: type
+          schema:
+            type: string
+          description: Filter by file type (e.g. pdf, jpg)
+        - in: query
+          name: page
           schema:
             type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of results per page
       responses:
         '200':
-          description: Détails de l'article récupérés avec succès.
+          description: Files list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Blog'
-        '404':
-          description: Article non trouvé.
-
-    put:
-      tags: [Blogs]
-      summary: Update a blog
-      description: Update an existing blog article.
-      operationId: updateBlog
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Blog'
-      responses:
-        '200':
-          description: Article mis à jour avec succès.
-        '400':
-          description: Données invalides fournies.
-
-    delete:
-      tags: [Blogs]
-      summary: Delete a blog
-      description: Delete a blog article by its ID.
-      operationId: deleteBlog
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Blog deleted successfully.
-        '404':
-          description: Blog not found.
+                type: array
+                items:
+                  $ref: "#/components/schemas/FileInfo"
 
   /orders/:
       get:
@@ -576,79 +574,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FileInfo"
-  "/files/":
-    post:
-      tags:
-        - "File"
-      operationId: uploadFile
-      summary: Upload File
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: "#/components/schemas/FileResource"
-      responses:
-        "200":
-          description: Document uploaded
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FileInfo"
-    get:
-      tags:
-        - "File"
-      operationId: getFiles
-      parameters:
-        - name: name
-          in: query
-          schema:
-            type: string
-
-        - name: type
-          in: query
-          schema:
-            type: string
-
-        - in: query
-          name: page
-          schema:
-            type: integer
-          description: Page number
-        - in: query
-          name: pageSize
-          schema:
-            type: integer
-          description: Number of results per page
-
-      responses:
-        "200":
-          description: Files list
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/FileInfo"
-  "/files/{file_id}/":
-    get:
-      tags:
-        - "File"
-      operationId: getFile
-      parameters:
-        - name: file_id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "200":
-          description: Files list
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FileInfo"
 
 components:
   schemas:
@@ -722,7 +647,7 @@ components:
       properties:
         size:
           type: string
-          enum: [PM, MM, GM, EX]
+          enum: [ PM, MM, GM, EX, UN ]
         prices:
           type: array
           items:
@@ -730,7 +655,7 @@ components:
             properties:
               size:
                 type: string
-                enum: [PM, MM, GM, EX]
+                enum: [ PM, MM, GM, EX, UN ]
               price:
                 type: number
                 format: float
@@ -837,6 +762,7 @@ components:
         id:
           type: string
           format: uuid
+          readOnly: true
         name:
           type: string
         customerEmail:
@@ -845,6 +771,7 @@ components:
         number:
           type: string
           format: phone
+          description: Numéro de téléphone du contact pour la commande
         items:
           type: array
           items:
@@ -852,9 +779,11 @@ components:
         submittedAt:
           type: string
           format: date-time
+          readOnly: true
         status:
           type: string
           enum: [ PENDING, CONFIRMED, CANCELLED ]
+          readOnly: true
     Contact:
       type: object
       required:
