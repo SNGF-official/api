@@ -25,7 +25,9 @@ class PlantImage(models.Model):
         validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])],
         help_text="Le fichier image de la plante."
         "Les formats supportés sont JPG, JPEG, PNG et WEBP.",
+        null=True,
     )
+    image_url = models.URLField(null=True, blank=True)  # noqa: DJ001
     alt_text = models.CharField(
         max_length=255,
         blank=True,
@@ -56,7 +58,9 @@ class SeedImage(models.Model):
         validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])],
         help_text="Le fichier image de la plante."
         "Les formats supportés sont JPG, JPEG, PNG et WEBP.",
+        null=True,
     )
+    image_url = models.URLField(null=True, blank=True)  # noqa: DJ001
     alt_text = models.CharField(
         max_length=255,
         blank=True,
@@ -84,6 +88,10 @@ class BaseProduct(models.Model):
         "Il est généré automatiquement et ne peut pas être modifié.",
     )
     name = models.CharField(max_length=100, help_text="Le nom du produit.")
+    scientific_name = models.CharField(
+        help_text="Le nom scientifique du produit.", default=""
+    )
+    species_code = models.CharField(help_text="ABCD par exemple.", default="")
     category = models.CharField(
         max_length=30,
         choices=CategoryChoices.choices,
@@ -145,6 +153,8 @@ class PlantSizePrice(models.Model):
 
 
 class Plant(BaseProduct):
+    article_code = models.CharField(help_text="ABCDplx pour plante extreme", default="")
+
     def __str__(self):
         return self.name
 
@@ -157,6 +167,9 @@ class Seed(BaseProduct):
         help_text="Identifiant unique de la graine.",
     )
     name = models.CharField(max_length=100, help_text="Le nom des graines.")
+    article_code = models.CharField(
+        help_text="ABCDgr pour graine par exemple.", default="", null=False
+    )
     category = models.CharField(
         max_length=30,
         choices=BaseProduct.CategoryChoices.choices,

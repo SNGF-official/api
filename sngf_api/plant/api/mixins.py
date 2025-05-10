@@ -15,6 +15,7 @@ class FilterQueryMixin:
         max_quantity = params.get("maxQuantity")
         min_price = params.get("minPrice")
         max_price = params.get("maxPrice")
+        size = params.get("size")
 
         if name:
             queryset = queryset.filter(name__iexact=name)
@@ -29,9 +30,11 @@ class FilterQueryMixin:
         if max_quantity:
             queryset = queryset.filter(quantity__lte=int(max_quantity))
         if min_price:
-            queryset = queryset.filter(price__gte=float(min_price))
+            queryset = queryset.filter(price_per_kilo__gte=float(min_price))
         if max_price:
-            queryset = queryset.filter(price__lte=float(max_price))
+            queryset = queryset.filter(price_per_kilo__lte=float(max_price))
+        if size:
+            queryset = queryset.filter(prices__size=size)
 
         if extra_filters:
             queryset = queryset.filter(**extra_filters)

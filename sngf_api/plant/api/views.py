@@ -54,9 +54,6 @@ class GetListPlantView(FilterQueryMixin, ListAPIView):
         params = self.request.query_params
         extra_filters = {}
 
-        if size := params.get("size"):
-            extra_filters["plant_size_price__size"] = size
-
         return self.filter_queryset_by_params(queryset, params, extra_filters)
 
 
