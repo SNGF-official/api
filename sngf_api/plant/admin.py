@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from .models import Category
 from .models import Plant
 from .models import PlantImage
 from .models import PlantSizePrice
@@ -9,20 +10,21 @@ from .models import SeedImage
 
 class PlantImageInline(admin.TabularInline):
     model = PlantImage
-    extra = 1  # Nombre de formulaires vides à afficher pour l'ajout d'images
+    extra = 1
 
 
 class PlantSizePriceInline(admin.TabularInline):
     model = PlantSizePrice
-    extra = 1  # Nombre de formulaires vides à afficher pour l'ajout de prix par taille
+    extra = 1
 
 
 @admin.register(Plant)
 class PlantAdmin(admin.ModelAdmin):
-    list_display = ("name", "category", "quantity", "status")
-    list_filter = ("category", "status")
+    list_display = ("name", "quantity", "status")
+    list_filter = ("categories", "status")
     search_fields = ("name", "description")
     inlines = [PlantImageInline, PlantSizePriceInline]
+    filter_horizontal = ("categories",)
 
 
 @admin.register(PlantImage)
@@ -44,6 +46,15 @@ class SeedImageInline(admin.TabularInline):
     extra = 1
 
 
+@admin.register(Seed)
+class SeedAdmin(admin.ModelAdmin):
+    list_display = ("name", "quantity", "status", "price_per_kilo")
+    list_filter = ("categories", "status")
+    search_fields = ("name", "description")
+    inlines = [SeedImageInline]
+    filter_horizontal = ("categories",)
+
+
 @admin.register(SeedImage)
 class SeedImageAdmin(admin.ModelAdmin):
     list_display = ("seed", "alt_text", "image")
@@ -51,9 +62,7 @@ class SeedImageAdmin(admin.ModelAdmin):
     search_fields = ("alt_text",)
 
 
-@admin.register(Seed)
-class SeedAdmin(admin.ModelAdmin):
-    list_display = ("name", "category", "quantity", "status", "price_per_kilo")
-    list_filter = ("category", "status")
-    search_fields = ("name", "description")
-    inlines = [SeedImageInline]
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    search_fields = ("name",)

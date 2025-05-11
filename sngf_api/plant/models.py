@@ -72,14 +72,24 @@ class SeedImage(models.Model):
         return f"Image de {self.seed.name}"
 
 
-class BaseProduct(models.Model):
-    class CategoryChoices(models.TextChoices):
-        AGROFORESTIERES = "AGROFORESTIERES", "Agroforestières"
-        ENDEMIQUES_AUTOCHTONES = "ENDEMIQUES_AUTOCHTONES", "Endémiques autochtones"
-        EXOTIQUES_REBOISEMENT = "EXOTIQUES_REBOISEMENT", "Exotiques de reboisement"
-        ORNEMENTALES = "ORNEMENTALES", "Ornementales"
-        EMBROUSSAILLEMENTS = "EMBROUSSAILLEMENTS", "Embrousseillements"
+class ProductType(models.TextChoices):
+    PLANT = "PLANT", "Plant"
+    SEED = "SEED", "Graine"
 
+
+class Category(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text="Nom de la catégorie : Agroforestières, Endémiques autochtones, etc.",
+    )
+
+    def __str__(self):
+        return f"{self.name})"
+
+
+class BaseProduct(models.Model):
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -92,12 +102,8 @@ class BaseProduct(models.Model):
         help_text="Le nom scientifique du produit.", default=""
     )
     species_code = models.CharField(help_text="ABCD par exemple.", default="")
-    category = models.CharField(
-        max_length=30,
-        choices=CategoryChoices.choices,
-        blank=True,
-        help_text="La catégorie du produit."
-        "Vous pouvez choisir parmi les options proposées.",
+    poids = models.PositiveIntegerField(
+        default=9, help_text="1 = très important, 9 = peu important"
     )
     description = models.TextField(
         blank=True, help_text="Une description détaillée du produit (facultatif)."
@@ -154,27 +160,26 @@ class PlantSizePrice(models.Model):
 
 class Plant(BaseProduct):
     article_code = models.CharField(help_text="ABCDplx pour plante extreme", default="")
+    categories = models.ManyToManyField(
+        Category,
+        blank=True,
+        related_name="plants",
+        help_text="Les catégories associées à cette plante.",
+    )
 
     def __str__(self):
         return self.name
 
 
 class Seed(BaseProduct):
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False,
-        help_text="Identifiant unique de la graine.",
-    )
-    name = models.CharField(max_length=100, help_text="Le nom des graines.")
     article_code = models.CharField(
         help_text="ABCDgr pour graine par exemple.", default="", null=False
     )
-    category = models.CharField(
-        max_length=30,
-        choices=BaseProduct.CategoryChoices.choices,
+    categories = models.ManyToManyField(
+        Category,
         blank=True,
-        help_text="La catégorie des graines.",
+        related_name="seeds",
+        help_text="Les catégories associées à cette graine.",
     )
     description = models.TextField(
         blank=True, help_text="Une description détaillée des graines (facultatif)."
