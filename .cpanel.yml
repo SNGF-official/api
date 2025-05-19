@@ -1,0 +1,46 @@
+name: Deploy Django API to cPanel
+
+env:
+  PROJECT_NAME: sngf_api
+  PROJECT_DIR: /home/sngfsilo/repositories/api
+  VENV_DIR: /home/sngfsilo/virtualenv/sngf_api_env
+  PYTHON_VERSION: 3.12
+  SETTINGS_MODULE: config.settings.production
+  DOMAIN: api.sngf-silo.com
+
+steps:
+  - name: 1. Create virtual environment
+    run: |
+      python${PYTHON_VERSION} -m venv ${VENV_DIR}
+      source ${VENV_DIR}/bin/activate
+      pip install --upgrade pip
+      pip install -r ${PROJECT_DIR}/requirements.txt
+
+  - name: 2. Configure Passenger
+    run: |
+      echo "import sys" > ${PROJECT_DIR}/passenger_wsgi.py
+      echo "sys.path.insert(0, '${PROJECT_DIR}')" >> ${PROJECT_DIR}/passenger_wsgi.py
+      echo "import os" >> ${PROJECT_DIR}/passenger_wsgi.py
+      echo "os.environ['DJANGO_SETTINGS_MODULE'] = '${SETTINGS_MODULE}'" >> ${PROJECT_DIR}/passenger_wsgi.py
+      echo "from django.core.wsgi import get_wsgi_application" >> ${PROJECT_DIR}/passenger_wsgi.py
+      echo "application = get_wsgi_application()" >> ${PROJECT_DIR}/passenger_wsgi.py
+
+  - name: 3. Configure .htaccess
+    run: |
+      cat > ${PROJECT_DIR}/.htaccess <<EOF
+      PassengerAppRoot "${PROJECT_DIR}"
+      PassengerPython "${VENV_DIR}/bin/python"
+      PassengerAppLogFile "/home/sngfsilo/logs/passenger.log"
+      SetEnv DJANGO_SETTINGS_MODULE ${SETTINGS_MODULE}
+      SetEnv PYTHON_EGG_CACHE ${PROJECT_DIR}/.python-eggs
+      EOF
+
+  - name: 4. Collect static files
+    run: |
+      source ${VENV_DIR}/bin/activate
+      cd ${PROJECT_DIR}
+      python manage.py collectstatic --noinput
+
+  - name: 5. Set file permissions (if needed)
+    run: |
+      chmod -R 755 ${PROJECT_DIR}
