@@ -6,59 +6,32 @@ from pathlib import Path
 import environ
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
-# sngf_api/
 APPS_DIR = BASE_DIR / "sngf_api"
 env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
 if READ_DOT_ENV_FILE:
-    # OS environment variables take precedence over variables from .env
     env.read_env(str(BASE_DIR / ".env"))
 
 # GENERAL
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool("DJANGO_DEBUG", False)
-# Local time zone. Choices are
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# though not all of them may be available with every OS.
-# In Windows, this must be set to your system time zone.
 TIME_ZONE = "UTC"
-# https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = "en-us"
-# https://docs.djangoproject.com/en/dev/ref/settings/#languages
-# from django.utils.translation import gettext_lazy as _
-# LANGUAGES = [
-#     ('en', _('English')),
-#     ('fr-fr', _('French')),
-#     ('pt-br', _('Portuguese')),
-# ]
-# https://docs.djangoproject.com/en/dev/ref/settings/#site-id
 SITE_ID = 1
-# https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
 USE_I18N = True
-# https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
-# https://docs.djangoproject.com/en/dev/ref/settings/#locale-paths
 LOCALE_PATHS = [str(BASE_DIR / "locale")]
 
 # DATABASES
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {"default": env.db("DATABASE_URL")}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
-# https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # URLS
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
 ROOT_URLCONF = "config.urls"
-# https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = "config.wsgi.application"
 
 # APPS
-# ------------------------------------------------------------------------------
 DJANGO_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -66,7 +39,6 @@ DJANGO_APPS = [
     "django.contrib.sites",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # "django.contrib.humanize", # Handy template tags
     "django.contrib.admin",
     "django.forms",
 ]
@@ -81,8 +53,8 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "drf_spectacular",
+    "ratelimit",
 ]
-
 LOCAL_APPS = [
     "sngf_api.users",
     "sngf_api.core",
@@ -93,44 +65,30 @@ LOCAL_APPS = [
     "sngf_api.plant",
     "sngf_api.contact",
     "sngf_api.order",
-    # Your stuff: custom apps go here
 ]
-# https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
-# MIGRATIONS
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#migration-modules
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIGRATION_MODULES = {"sites": "sngf_api.contrib.sites.migrations"}
 
 # AUTHENTICATION
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
-# https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
-# https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
 LOGIN_REDIRECT_URL = "users:redirect"
-# https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 LOGIN_URL = "account_login"
 
 # PASSWORDS
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#password-hashers
 PASSWORD_HASHERS = [
-    # https://docs.djangoproject.com/en/dev/topics/auth/passwords/#using-argon2-with-django
     "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
 ]
-# https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
     },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
@@ -138,8 +96,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # MIDDLEWARE
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -154,14 +110,9 @@ MIDDLEWARE = [
 ]
 
 # STATIC
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#static-root
 STATIC_ROOT = str(BASE_DIR / "staticfiles")
-# https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = "/static/"
-# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [str(APPS_DIR / "static")]
-# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
@@ -222,35 +173,38 @@ SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#x-frame-options
 X_FRAME_OPTIONS = "DENY"
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_SSL_REDIRECT = env.bool("DJANGO_SECURE_SSL_REDIRECT", default=True)
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # EMAIL
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 EMAIL_BACKEND = env(
-    "DJANGO_EMAIL_BACKEND",
-    default="django.core.mail.backends.smtp.EmailBackend",
+    "DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend"
 )
-# https://docs.djangoproject.com/en/dev/ref/settings/#email-timeout
+EMAIL_HOST = env("DJANGO_EMAIL_HOST", default="mail.sngf-silo.com")
+EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", default=587)
+EMAIL_USE_TLS = env.bool("DJANGO_EMAIL_USE_TLS", default=True)
+EMAIL_HOST_USER = env("DJANGO_EMAIL_HOST_USER", default="noreply@yourdomain.com")
+EMAIL_HOST_PASSWORD = env("DJANGO_EMAIL_HOST_PASSWORD", default="your-email-password")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_TIMEOUT = 5
 ORDER_NOTIFICATION_EMAILS = ["rabenaly3@gmail.com"]
 
 # ADMIN
-# ------------------------------------------------------------------------------
-# Django Admin URL.
 ADMIN_URL = "admin/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = [("""Ylan""", "rabenaly3@gmail.com")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
-# https://cookiecutter-django.readthedocs.io/en/latest/settings.html#other-environment-settings
-# Force the `admin` sign in process to go through the `django-allauth` workflow
 DJANGO_ADMIN_FORCE_ALLAUTH = env.bool("DJANGO_ADMIN_FORCE_ALLAUTH", default=False)
 
 # LOGGING
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#logging
-# See https://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -269,40 +223,33 @@ LOGGING = {
     "root": {"level": "INFO", "handlers": ["console"]},
 }
 
+# REDIS
 REDIS_URL = env("REDIS_URL", default="redis://redis:6379/0")
 REDIS_SSL = REDIS_URL.startswith("rediss://")
 
+# RATE LIMITING via django-ratelimit
+RATELIMIT_ENABLE = True
+RATELIMIT_VIEW = "sngf_api.core.views.too_many_requests"  # Crée cette vue
+RATELIMIT_USE_CACHE = "default"
 
-# django-allauth
-# ------------------------------------------------------------------------------
-ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
-# https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_LOGIN_METHODS = {"email"}
-# https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
-# https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-# https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-# https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_ADAPTER = "sngf_api.users.adapters.AccountAdapter"
-# https://docs.allauth.org/en/latest/account/forms.html
-ACCOUNT_FORMS = {"signup": "sngf_api.users.forms.UserSignupForm"}
-# https://docs.allauth.org/en/latest/socialaccount/configuration.html
-SOCIALACCOUNT_ADAPTER = "sngf_api.users.adapters.SocialAccountAdapter"
-# https://docs.allauth.org/en/latest/socialaccount/configuration.html
-SOCIALACCOUNT_FORMS = {"signup": "sngf_api.users.forms.UserSocialSignupForm"}
-
-# django-rest-framework
-# -------------------------------------------------------------------------------
-# django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
+# REST FRAMEWORK
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
-    ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "100/hour",
+        "user": "1000/day",
+    },
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
