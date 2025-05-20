@@ -25,9 +25,7 @@ class PlantImage(models.Model):
         validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])],
         help_text="Le fichier image de la plante."
         "Les formats supportés sont JPG, JPEG, PNG et WEBP.",
-        null=True,
     )
-    image_url = models.URLField(null=True, blank=True)  # noqa: DJ001
     alt_text = models.CharField(
         max_length=255,
         blank=True,
@@ -58,9 +56,7 @@ class SeedImage(models.Model):
         validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])],
         help_text="Le fichier image de la plante."
         "Les formats supportés sont JPG, JPEG, PNG et WEBP.",
-        null=True,
     )
-    image_url = models.URLField(null=True, blank=True)  # noqa: DJ001
     alt_text = models.CharField(
         max_length=255,
         blank=True,
@@ -72,24 +68,14 @@ class SeedImage(models.Model):
         return f"Image de {self.seed.name}"
 
 
-class ProductType(models.TextChoices):
-    PLANT = "PLANT", "Plant"
-    SEED = "SEED", "Graine"
-
-
-class Category(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(
-        max_length=100,
-        unique=True,
-        help_text="Nom de la catégorie : Agroforestières, Endémiques autochtones, etc.",
-    )
-
-    def __str__(self):
-        return f"{self.name})"
-
-
 class BaseProduct(models.Model):
+    class CategoryChoices(models.TextChoices):
+        AGROFORESTIERES = "AGROFORESTIERES", "Agroforestières"
+        ENDEMIQUES_AUTOCHTONES = "ENDEMIQUES_AUTOCHTONES", "Endémiques autochtones"
+        EXOTIQUES_REBOISEMENT = "EXOTIQUES_REBOISEMENT", "Exotiques de reboisement"
+        ORNEMENTALES = "ORNEMENTALES", "Ornementales"
+        EMBROUSSAILLEMENTS = "EMBROUSSAILLEMENTS", "Embrousseillements"
+
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -98,12 +84,12 @@ class BaseProduct(models.Model):
         "Il est généré automatiquement et ne peut pas être modifié.",
     )
     name = models.CharField(max_length=100, help_text="Le nom du produit.")
-    scientific_name = models.CharField(
-        help_text="Le nom scientifique du produit.", default=""
-    )
-    species_code = models.CharField(help_text="ABCD par exemple.", default="")
-    poids = models.PositiveIntegerField(
-        default=9, help_text="1 = très important, 9 = peu important"
+    category = models.CharField(
+        max_length=30,
+        choices=CategoryChoices.choices,
+        blank=True,
+        help_text="La catégorie du produit."
+        "Vous pouvez choisir parmi les options proposées.",
     )
     description = models.TextField(
         blank=True, help_text="Une description détaillée du produit (facultatif)."
@@ -127,8 +113,6 @@ class PlantSizePrice(models.Model):
         PM = "PM", "Petit modèle"
         MM = "MM", "Modèle moyen"
         GM = "GM", "Grand modèle"
-        EX = "EX", "Extrème modèle"
-        UN = "UN", "Unique modèle"
 
     id = models.UUIDField(
         primary_key=True,
@@ -159,12 +143,17 @@ class PlantSizePrice(models.Model):
 
 
 class Plant(BaseProduct):
-    article_code = models.CharField(help_text="ABCDplx pour plante extreme", default="")
-    categories = models.ManyToManyField(
-        Category,
-        blank=True,
-        related_name="plants",
-        help_text="Les catégories associées à cette plante.",
+    article_code = models.CharField(
+        max_length=150,  # Adjust max_length as needed
+        help_text="Code de l'article de la plante.",
+    )
+    scientific_name = models.CharField(
+        max_length=100,  # Adjust max_length as needed
+        help_text="Nom scientifique de la plante.",
+    )
+    species_code = models.CharField(
+        max_length=150,  # Adjust max_length as needed
+        help_text="Code de l'espèce de la plante.",
     )
 
     def __str__(self):
@@ -172,14 +161,18 @@ class Plant(BaseProduct):
 
 
 class Seed(BaseProduct):
-    article_code = models.CharField(
-        help_text="ABCDgr pour graine par exemple.", default="", null=False
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        help_text="Identifiant unique de la graine.",
     )
-    categories = models.ManyToManyField(
-        Category,
+    name = models.CharField(max_length=100, help_text="Le nom des graines.")
+    category = models.CharField(
+        max_length=30,
+        choices=BaseProduct.CategoryChoices.choices,
         blank=True,
-        related_name="seeds",
-        help_text="Les catégories associées à cette graine.",
+        help_text="La catégorie des graines.",
     )
     description = models.TextField(
         blank=True, help_text="Une description détaillée des graines (facultatif)."
@@ -194,6 +187,18 @@ class Seed(BaseProduct):
     )
     price_per_kilo = models.DecimalField(
         max_digits=10, decimal_places=2, help_text="Le prix des graines au kilogramme."
+    )
+    article_code = models.CharField(
+        max_length=150,  # Adjust max_length as needed
+        help_text="Code de l'article de la graine.",
+    )
+    scientific_name = models.CharField(
+        max_length=150,  # Adjust max_length as needed
+        help_text="Nom scientifique de la graine.",
+    )
+    species_code = models.CharField(
+        max_length=150,  # Adjust max_length as needed
+        help_text="Code de l'espèce de la graine.",
     )
 
     def __str__(self):
