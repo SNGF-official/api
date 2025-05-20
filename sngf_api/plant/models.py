@@ -143,6 +143,19 @@ class PlantSizePrice(models.Model):
 
 
 class Plant(BaseProduct):
+    article_code = models.CharField(
+        max_length=150,  # Adjust max_length as needed
+        help_text="Code de l'article de la plante.",
+    )
+    scientific_name = models.CharField(
+        max_length=100,  # Adjust max_length as needed
+        help_text="Nom scientifique de la plante.",
+    )
+    species_code = models.CharField(
+        max_length=150,  # Adjust max_length as needed
+        help_text="Code de l'espèce de la plante.",
+    )
+
     def __str__(self):
         return self.name
 
@@ -174,6 +187,18 @@ class Seed(BaseProduct):
     )
     price_per_kilo = models.DecimalField(
         max_digits=10, decimal_places=2, help_text="Le prix des graines au kilogramme."
+    )
+    article_code = models.CharField(
+        max_length=150,  # Adjust max_length as needed
+        help_text="Code de l'article de la graine.",
+    )
+    scientific_name = models.CharField(
+        max_length=150,  # Adjust max_length as needed
+        help_text="Nom scientifique de la graine.",
+    )
+    species_code = models.CharField(
+        max_length=150,  # Adjust max_length as needed
+        help_text="Code de l'espèce de la graine.",
     )
 
     def __str__(self):
