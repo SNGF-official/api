@@ -1,0 +1,864 @@
+openapi: 3.0.3
+info:
+  title: SNGF API
+  version: 1.0.0
+  description: API for managing plants, seeds, events, blogs, testimonials, and orders for the SNGF website
+
+paths:
+  /seeds/:
+    get:
+      tags: [ Seeds ]
+      summary: Get list of seeds
+      description: Retrieve a filtered list of active seeds with support for keyword search and pagination.
+      operationId: getListSeed
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Filter by exact name
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: Keyword search in name or description
+        - in: query
+          name: category
+          schema:
+            type: string
+            enum:
+              - AGROFORESTIERES
+              - ENDEMIQUES_AUTOCHTONES
+              - EXOTIQUES_REBOISEMENT
+              - ORNEMENTALES
+              - EMBROUSSAILLEMENTS
+          description: Filter by seed category
+        - in: query
+          name: minQuantity
+          schema:
+            type: integer
+          description: Minimum available quantity
+        - in: query
+          name: maxQuantity
+          schema:
+            type: integer
+          description: Maximum available quantity
+        - in: query
+          name: minPrice
+          schema:
+            type: number
+            format: float
+          description: Minimum price per kilo
+        - in: query
+          name: maxPrice
+          schema:
+            type: number
+            format: float
+          description: Maximum price per kilo
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of results per page
+      responses:
+        '200':
+          description: Liste des graines récupérée avec succès.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Seed'
+
+    post:
+      tags: [ Seeds ]
+      summary: Add a new seed
+      description: Add a new seed to the inventory.
+      operationId: createSeed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Seed'
+      responses:
+        '201':
+          description: Seed created successfully.
+        '400':
+          description: Invalid data provided.
+
+  /seeds/{id}:
+    get:
+      tags: [ Seeds ]
+      summary: Get seed by ID
+      description: Retrieve a single seed by its ID.
+      operationId: getSeedByID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Détails de la graine récupérée avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Seed'
+        '404':
+          description: Graine non trouvée.
+
+    put:
+      tags: [ Seeds ]
+      summary: Update a seed
+      description: Update an existing seed's information.
+      operationId: updateSeed
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Seed'
+      responses:
+        '200':
+          description: Graine mise à jour avec succès.
+        '400':
+          description: Données invalides fournies.
+
+  /plants/:
+    get:
+      tags: [ Plants ]
+      summary: Get list of plants
+      description: Retrieve a filtered list of active plants with support for keyword search and pagination.
+      operationId: getListPlant
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Filter by exact name
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: Keyword search in name or description
+        - in: query
+          name: category
+          schema:
+            type: string
+            enum:
+              - AGROFORESTIERES
+              - ENDEMIQUES_AUTOCHTONES
+              - EXOTIQUES_REBOISEMENT
+              - ORNEMENTALES
+              - EMBROUSSAILLEMENTS
+          description: Filter by plant category
+        - in: query
+          name: size
+          schema:
+            type: string
+            enum: [ PM, MM, GM, EX, UN ]
+          description: Filter by plant size
+        - in: query
+          name: minQuantity
+          schema:
+            type: integer
+          description: Minimum available quantity
+        - in: query
+          name: maxQuantity
+          schema:
+            type: integer
+          description: Maximum available quantity
+        - in: query
+          name: minPrice
+          schema:
+            type: number
+            format: float
+          description: Minimum price (any size)
+        - in: query
+          name: maxPrice
+          schema:
+            type: number
+            format: float
+          description: Maximum price (any size)
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of results per page
+      responses:
+        '200':
+          description: Liste des plantes récupérée avec succès.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Plant'
+
+    post:
+      tags: [ Plants ]
+      summary: Add a new plant
+      description: Add a new plant to the inventory.
+      operationId: createPlant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Plant'
+      responses:
+        '201':
+          description: Plant created successfully.
+        '400':
+          description: Invalid data provided.
+
+  /plants/{id}:
+    get:
+      tags: [ Plants ]
+      summary: Get plant by ID
+      description: Retrieve a single plant by its ID.
+      operationId: getPlantByID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Détails de la plante récupérés avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plant'
+        '404':
+          description: Plante non trouvée.
+
+    put:
+      tags: [ Plants ]
+      summary: Update a plant
+      description: Update an existing plant's information.
+      operationId: updatePlant
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Plant'
+      responses:
+        '200':
+          description: Plante mise à jour avec succès.
+        '400':
+          description: Données invalides fournies.
+
+  /events/:
+    get:
+      tags: [ Events ]
+      summary: Get list of events
+      description: Retrieve a filtered list of events with support for keyword search, date and pagination.
+      operationId: getListEvent
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: Keyword search in title or description
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+          description: Filter by specific event date
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of results per page
+      responses:
+        '200':
+          description: Liste des événements récupérée avec succès.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+
+  /events/{id}:
+    get:
+      tags: [Events]
+      summary: Get event by ID
+      description: Retrieve a single event by its ID.
+      operationId: getEventByID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails de l'événement récupérés avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '404':
+          description: Événement non trouvé.
+
+    put:
+      tags: [Events]
+      summary: Update an event
+      description: Update an existing event's information.
+      operationId: updateEvent
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        '200':
+          description: Événement mis à jour avec succès.
+        '400':
+          description: Données invalides fournies.
+
+    delete:
+      tags: [Events]
+      summary: Delete an event
+      description: Delete an event by its ID.
+      operationId: deleteEvent
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Event deleted successfully.
+        '404':
+          description: Event not found.
+
+  /blogs/:
+    get:
+      tags: [ Blogs ]
+      summary: Get list of blogs
+      description: Retrieve a filtered list of blog articles with support for keyword search, author and pagination.
+      operationId: getListBlog
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: Keyword search in title or content
+        - in: query
+          name: author
+          schema:
+            type: string
+          description: Filter by author's name
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of results per page
+      responses:
+        '200':
+          description: Liste des articles de blog récupérée avec succès.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Blog'
+
+  /files/:
+    get:
+      tags: [ File ]
+      summary: Get list of files
+      description: Retrieve a filtered list of uploaded files with support for keyword search and pagination.
+      operationId: getFiles
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: Keyword search in file name
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Exact file name
+        - in: query
+          name: type
+          schema:
+            type: string
+          description: Filter by file type (e.g. pdf, jpg)
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of results per page
+      responses:
+        '200':
+          description: Files list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FileInfo"
+
+  /orders/:
+      get:
+        tags: [Orders]
+        summary: Get list of all orders
+        description: Retrieve a paginated list of all orders.
+        operationId: getListOrder
+        parameters:
+          - in: query
+            name: page
+            schema:
+              type: integer
+            description: Page number
+          - in: query
+            name: pageSize
+            schema:
+              type: integer
+            description: Number of results per page
+        responses:
+          '200':
+            description: Liste des commandes récupérée avec succès.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Order'
+
+      put:
+        tags: [Orders]
+        summary: Create or update an order
+        description: Create a new order or update an existing order. The operation is idempotent.
+        operationId: putOrder
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        responses:
+          '200':
+            description: Commande créée ou mise à jour avec succès.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Order'
+          '400':
+            description: Données de commande invalides.
+
+  /orders/{id}:
+    get:
+      tags: [Orders]
+      summary: Get order by ID
+      description: Retrieve details of a specific order by its ID.
+      operationId: getOrderById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Détails de la commande récupérés avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Commande non trouvée.
+
+  "/files/{file_id}/download/":
+    get:
+      tags:
+        - "File"
+      operationId: downloadFile
+      summary: Download File
+      parameters:
+        - name: file_id
+          required: true
+          in: path
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              example: attachment; filename="example.txt"
+  "/files/raw/":
+    post:
+      tags:
+        - "File"
+      operationId: uploadRawFile
+      summary: Upload raw File
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadFile"
+      responses:
+        "200":
+          description: Document successfully uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileInfo"
+
+components:
+  schemas:
+    Image:
+      type: object
+      required:
+        - id
+        - altText
+        - image
+      properties:
+        id:
+          type: string
+          format: uuid
+        altText:
+          type: string
+        image:
+          type: string
+          format: uri
+
+    BaseProduct:
+      type: object
+      required:
+        - id
+        - name
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        category:
+          type: string
+          enum:
+            - AGROFORESTIERES
+            - ENDEMIQUES_AUTOCHTONES
+            - EXOTIQUES_REBOISEMENT
+            - ORNEMENTALES
+            - EMBROUSSAILLEMENTS
+        description:
+          type: string
+        quantity:
+          type: integer
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image'
+          description: Listes des images associées
+
+    Seed:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseProduct'
+      required:
+        - pricePerKilo
+      properties:
+        pricePerKilo:
+          type: number
+          format: float
+
+    Plant:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseProduct'
+      required:
+        - size
+        - prices
+      properties:
+        size:
+          type: string
+          enum: [ PM, MM, GM, EX, UN ]
+        prices:
+          type: array
+          items:
+            type: object
+            properties:
+              size:
+                type: string
+                enum: [ PM, MM, GM, EX, UN ]
+              price:
+                type: number
+                format: float
+
+    Event:
+      type: object
+      required:
+        - id
+        - title
+        - date
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+          format: date-time
+        location:
+          type: string
+        imageUrl:
+          type: string
+          format: uri
+          nullable: true
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+
+    Blog:
+      type: object
+      required:
+        - id
+        - title
+        - content
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        content:
+          type: string
+        author:
+          type: string
+        publishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        imageUrl:
+          type: string
+          format: uri
+          nullable: true
+        fileId:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+
+    OrderItem:
+      type: object
+      required:
+        - productId
+        - type
+        - quantity
+      properties:
+        productId:
+          type: integer
+          description: ID du produit (plant ou seed)
+        type:
+          type: string
+          enum: [ PLANT, SEED ]
+          description: Type de produit
+        quantity:
+          type: integer
+          description: Quantité commandée
+        unit:
+          type: string
+          nullable: true
+          description: Unité de la quantité (e.g., 'unit', 'kg')
+        size:
+          type: string
+          nullable: true
+          description: Taille de la plante (si applicable)
+        price:
+          type: number
+          format: float
+          description: Prix unitaire de l'article au moment de la commande
+
+    Order:
+      type: object
+      required:
+        - id
+        - items
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+        customerEmail:
+          type: string
+          format: email
+        number:
+          type: string
+          format: phone
+          description: Numéro de téléphone du contact pour la commande
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        submittedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          type: string
+          enum: [ PENDING, CONFIRMED, CANCELLED ]
+          readOnly: true
+    Contact:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        customerEmail:
+          type: string
+          format: email
+        number:
+          type: string
+          format: phone
+        message:
+          type: string
+
+    FileResource:
+      properties:
+        id:
+          type: string
+          minimum: 1
+        name:
+          type: string
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        fileToUpload:
+          type: string
+          minimum: 1
+          format: binary
+          description: The file to be uploaded
+
+    UploadFile:
+      required:
+        - fileToUpload
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/FileInfo"
+      properties:
+        fileToUpload:
+          type: string
+          format: byte
+          minimum: 1
+
+
+    FileInfo:
+      required:
+        - id
+        - name
+        - type
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          minimum: 1
+        name:
+          type: string
+          description: name without extension
+          minimum: 1
+        type:
+          type: string
+          example: jpg
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        fileToUpload:
+          type: string
+          description: url to the file
+          format: uri
+          minimum: 1
+          example: http://localhost:8000/media/files/somefile.txt

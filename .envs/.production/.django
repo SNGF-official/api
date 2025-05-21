@@ -1,0 +1,49 @@
+# General
+# ------------------------------------------------------------------------------
+# DJANGO_READ_DOT_ENV_FILE=True
+DJANGO_SETTINGS_MODULE=config.settings.production
+DJANGO_SECRET_KEY=Azzgyt5raLJXB4KUymnwhC3sFfSwJ8VzVxXdDRDZhKK69WpjubY6K3Sa3tmPO1qw
+DJANGO_ADMIN_URL=qpHd9Qa2VMQ6VDr0tKXgzRzxip4hlsRy/
+DJANGO_ALLOWED_HOSTS=.sngf-silo.com
+
+# Security
+# ------------------------------------------------------------------------------
+# TIP: better off using DNS, however, redirect is OK too
+DJANGO_SECURE_SSL_REDIRECT=False
+DATABASE_URL=mysql://sngf_user:J0iMcd0PoziT@localhost:3306/sngf_dbprod1
+USE_DOCKER=
+
+# Email
+# ------------------------------------------------------------------------------
+DJANGO_SERVER_EMAIL=
+DJANGO_EMAIL_HOST_PASSWORD=N_WZfeNLPx5b
+DJANGO_EMAIL_HOST=mail.sngf-silo.com
+DJANGO_EMAIL_PORT=465
+DJANGO_EMAIL_HOST_USER=contact@sngf-silo.com
+DJANGO_EMAIL_USE_TLS=True
+MAILGUN_API_KEY=
+MAILGUN_DOMAIN=
+
+
+# AWS
+# ------------------------------------------------------------------------------
+DJANGO_AWS_ACCESS_KEY_ID=
+DJANGO_AWS_SECRET_ACCESS_KEY=
+DJANGO_AWS_STORAGE_BUCKET_NAME=
+
+# django-allauth
+# ------------------------------------------------------------------------------
+DJANGO_ACCOUNT_ALLOW_REGISTRATION=True
+
+# Gunicorn
+# ------------------------------------------------------------------------------
+WEB_CONCURRENCY=4
+
+# Sentry
+# ------------------------------------------------------------------------------
+SENTRY_DSN=https://8b55c5daa46b77bbed730a3f113c292d@o4509350911213568.ingest.de.sentry.io/4509350921568336
+
+
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0
