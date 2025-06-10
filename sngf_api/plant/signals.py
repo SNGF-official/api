@@ -14,5 +14,8 @@ DEFAULT_CATEGORIES = [
 
 @receiver(post_migrate)
 def create_default_categories(sender, **kwargs):
-    for code, _name in DEFAULT_CATEGORIES:
-        Category.objects.get_or_create(name=code)
+    for code, display_name in DEFAULT_CATEGORIES:
+        Category.objects.get_or_create(
+            name=code,
+            defaults={"display_name": display_name}
+        )

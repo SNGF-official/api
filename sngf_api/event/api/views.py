@@ -19,7 +19,7 @@ class FlatListPagination(PageNumberPagination):
         return Response(data)
 
 
-class GetEventByIdView(drf_spectacular.RetrieveAPIView):
+class GetEventByIdView(drf_spectacular.RetrieveUpdateDestroyAPIView):
     queryset = EventModel.objects.all()
     serializer_class = EventSerializer
     permission_classes = [AllowAny]

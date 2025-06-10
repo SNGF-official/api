@@ -27,16 +27,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='order',
             name='contact_email',
-            field=models.EmailField(max_length=254, null=True),
+            field=models.EmailField(max_length=254, null=True, blank=True),
         ),
         migrations.AddField(
             model_name='order',
             name='contact_name',
-            field=models.CharField(null=True),
+            field=models.CharField(max_length=255, null=True, blank=True),
         ),
         migrations.AlterField(
             model_name='orderitem',
             name='product_id',
-            field=models.UUIDField(default=uuid.UUID('533622a3-838f-454e-b538-476edbb6a4dc')),
+            field=models.UUIDField(default=uuid.uuid4),
         ),
     ]

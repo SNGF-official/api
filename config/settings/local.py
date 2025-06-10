@@ -71,3 +71,6 @@ INSTALLED_APPS += ["django_extensions"]
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+SECURE_SSL_REDIRECT=False
+SESSION_COOKIE_SECURE=False
+CSRF_COOKIE_SECURE=False

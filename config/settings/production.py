@@ -72,50 +72,30 @@ SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
 
 
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
-AWS_ACCESS_KEY_ID = env("DJANGO_AWS_ACCESS_KEY_ID")
-# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
-AWS_SECRET_ACCESS_KEY = env("DJANGO_AWS_SECRET_ACCESS_KEY")
-# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
-AWS_STORAGE_BUCKET_NAME = env("DJANGO_AWS_STORAGE_BUCKET_NAME")
-# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
-AWS_QUERYSTRING_AUTH = False
-# DO NOT change these unless you know what you're doing.
-_AWS_EXPIRY = 60 * 60 * 24 * 7
-# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
-AWS_S3_OBJECT_PARAMETERS = {
-    "CacheControl": f"max-age={_AWS_EXPIRY}, s-maxage={_AWS_EXPIRY}, must-revalidate",
-}
-# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
-AWS_S3_MAX_MEMORY_SIZE = env.int(
-    "DJANGO_AWS_S3_MAX_MEMORY_SIZE",
-    default=100_000_000,  # 100MB
-)
-# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
-AWS_S3_REGION_NAME = env("DJANGO_AWS_S3_REGION_NAME", default=None)
-# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#cloudfront
-AWS_S3_CUSTOM_DOMAIN = env("DJANGO_AWS_S3_CUSTOM_DOMAIN", default=None)
-aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 # STATIC & MEDIA
 # ------------------------
 STORAGES = {
     "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
         "OPTIONS": {
-            "location": "media",
-            "file_overwrite": False,
+            "location": str(APPS_DIR / "media"),
+            "base_url": "/media/",
         },
     },
     "staticfiles": {
-        "BACKEND": "storages.backends.s3.S3Storage",
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
         "OPTIONS": {
-            "location": "static",
-            "default_acl": "public-read",
+            "location": str(BASE_DIR / "staticfiles"),
+            "base_url": "/static/",
         },
     },
 }
-MEDIA_URL = f"https://{aws_s3_domain}/media/"
-COLLECTFASTA_STRATEGY = "collectfasta.strategies.boto3.Boto3Strategy"
-STATIC_URL = f"https://{aws_s3_domain}/static/"
+
+MEDIA_ROOT = str(APPS_DIR / "media")
+MEDIA_URL = "/media/"
+STATIC_ROOT = str(BASE_DIR / "staticfiles")
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [str(APPS_DIR / "static")]
 
 # EMAIL
 # ------------------------------------------------------------------------------
@@ -194,6 +174,14 @@ LOGGING = {
         },
     },
 }
+LOGGING["handlers"]["file"] = {
+    "level": "DEBUG",
+    "class": "logging.FileHandler",
+    "filename": "/home/sngfsilo/api/logs/django-debug.log",
+    "formatter": "verbose",
+}
+LOGGING["root"]["handlers"].append("file")
+
 
 # Sentry
 # ------------------------------------------------------------------------------

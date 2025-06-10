@@ -14,37 +14,32 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='plant',
             name='article_code',
-            field=models.CharField(default='', help_text='ABCDplx pour plante extreme'),
+            field=models.CharField(max_length=150, default='', help_text='Code de l\'article de la plante.'),
         ),
         migrations.AddField(
             model_name='plant',
             name='scientific_name',
-            field=models.CharField(default='', help_text='Le nom scientifique du produit.'),
+            field=models.CharField(max_length=100, default='', help_text='Nom scientifique de la plante.'),
         ),
         migrations.AddField(
             model_name='plant',
             name='species_code',
-            field=models.CharField(default='', help_text='ABCD par exemple.'),
-        ),
-        migrations.AddField(
-            model_name='plantimage',
-            name='image_url',
-            field=models.URLField(blank=True, null=True),
+            field=models.CharField(max_length=150, default='', help_text='Code de l\'espèce de la plante.'),
         ),
         migrations.AddField(
             model_name='seed',
             name='article_code',
-            field=models.CharField(default='', help_text='ABCDgr pour graine par exemple.'),
+            field=models.CharField(max_length=150, default='', help_text='Code de l\'article de la graine.'),
         ),
         migrations.AddField(
             model_name='seed',
             name='scientific_name',
-            field=models.CharField(default='', help_text='Le nom scientifique du produit.'),
+            field=models.CharField(max_length=150, default='', help_text='Nom scientifique de la graine.'),
         ),
         migrations.AddField(
             model_name='seed',
             name='species_code',
-            field=models.CharField(default='', help_text='ABCD par exemple.'),
+            field=models.CharField(max_length=150, default='', help_text='Code de l\'espèce de la graine.'),
         ),
         migrations.AddField(
             model_name='seedimage',
