@@ -1,6 +1,5 @@
 name: CI
 
-# Enable Buildkit and let compose use it to speed up image building
 env:
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
@@ -29,11 +28,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version-file: '.python-version'
-      # Consider using pre-commit.ci for open source project
+
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.1
 
-  # With no caching at all the entire ci process takes 3m to complete!
   pytest:
     runs-on: ubuntu-latest
 
@@ -58,3 +56,21 @@ jobs:
 
       - name: Tear down the Stack
         run: docker compose -f docker-compose.local.yml down
+
+  web-deploy:
+    name: Deploy backend app
+    needs: pytest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: 📂 Sync all files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 46.4.78.59
+          username: ${{ secrets.FTP_SERVER_NAME }}
+          password: ${{ secrets.FTP_SERVER_PASS }}
+          server-dir: /home/sngfsilo/api.prod.sngf-silo.com/
+          local-dir: ./
