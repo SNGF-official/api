@@ -25,7 +25,7 @@ class GetListBlogView(BlogFilterMixin, generics.ListAPIView):
 
     def get_queryset(self):
         queryset = Blog.objects.all()
-        return self.filter_queryset_by_params(queryset)
+        return self.filter_queryset_by_params(queryset, self.request.query_params)
 
 
 class GetBlogByIdView(generics.RetrieveAPIView):

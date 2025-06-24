@@ -98,6 +98,9 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [str(APPS_DIR / "static")]
 
 # EMAIL
+EMAIL_HOST_USER = "tech-ylan@sngf-silo.com"
+EMAIL_HOST_PASSWORD = "=hwhFPnhoKW?"
+EMAIL_USE_TLS = True
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
 DEFAULT_FROM_EMAIL = env(
@@ -112,7 +115,7 @@ EMAIL_SUBJECT_PREFIX = env(
     default="[sngf_api] ",
 )
 ACCOUNT_EMAIL_SUBJECT_PREFIX = EMAIL_SUBJECT_PREFIX
-
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 # ADMIN
 # ------------------------------------------------------------------------------
 # Django Admin URL regex.
@@ -125,12 +128,8 @@ INSTALLED_APPS += ["anymail"]
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 # https://anymail.readthedocs.io/en/stable/installation/#anymail-settings-reference
 # https://anymail.readthedocs.io/en/stable/esps/mailgun/
-EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
-ANYMAIL = {
-    "MAILGUN_API_KEY": env("MAILGUN_API_KEY"),
-    "MAILGUN_SENDER_DOMAIN": env("MAILGUN_DOMAIN"),
-    "MAILGUN_API_URL": env("MAILGUN_API_URL", default="https://api.mailgun.net/v3"),
-}
+
+ANYMAIL = {}
 
 # Collectfasta
 # ------------------------------------------------------------------------------

@@ -5,6 +5,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from sngf_api.core.models import Status
 from sngf_api.event.api.serializers import EventSerializer
 from sngf_api.event.models import EventModel
 
@@ -20,7 +21,7 @@ class FlatListPagination(PageNumberPagination):
 
 
 class GetEventByIdView(drf_spectacular.RetrieveUpdateDestroyAPIView):
-    queryset = EventModel.objects.all()
+    queryset = EventModel.objects.filter(status=Status.STATUS.ACTIVE)
     serializer_class = EventSerializer
     permission_classes = [AllowAny]
     lookup_field = "id"
@@ -32,7 +33,7 @@ class GetListEventView(drf_spectacular.ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        queryset = EventModel.objects.all()
+        queryset = EventModel.objects.filter(status=Status.STATUS.ACTIVE)
 
         keyword = self.request.query_params.get("keyword")
         date_str = self.request.query_params.get("date")
