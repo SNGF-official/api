@@ -577,6 +577,53 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FileInfo"
+  /feedback/:
+    post:
+      tags: [ Contacts ]
+      summary: Envoyer un message de contact (formulaire long)
+      description: Envoie un message avec nom, email, téléphone et contenu via le formulaire principal.
+      operationId: submitContactFeedback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contact'
+      responses:
+        '201':
+          description: Message enregistré et email envoyé.
+        '400':
+          description: Données invalides.
+
+  /quick-contact/:
+    post:
+      tags: [ Contacts ]
+      summary: Envoyer un message rapide de contact (formulaire footer)
+      description: Envoie un message de contact sans champ téléphone.
+      operationId: submitQuickContact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - customerEmail
+                - message
+              properties:
+                name:
+                  type: string
+                customerEmail:
+                  type: string
+                  format: email
+                message:
+                  type: string
+      responses:
+        '201':
+          description: Message enregistré et email envoyé.
+        '400':
+          description: Données invalides.
 
 components:
   schemas:
