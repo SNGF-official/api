@@ -600,7 +600,7 @@ paths:
       tags: [ Contacts ]
       summary: Submit quick contact form
       description: Send a minimal contact message (name, email, message) from quick contact form (e.g. footer).
-      operationId: submitQuickContactMessage
+      operationId: submitContactMessage
       requestBody:
         required: true
         content:
