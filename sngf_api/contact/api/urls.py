@@ -1,6 +1,6 @@
 from django.urls import path
 
-from sngf_api.contact.api.views import ContactCreateAPIView
+from sngf_api.contact.api.views import ContactCreateAPIView, ContactSimpleAPIView
 
 urlpatterns = [
     path("feedback/", ContactCreateAPIView.as_view(), name="feedback"),

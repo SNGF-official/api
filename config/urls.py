@@ -36,6 +36,7 @@ urlpatterns += [
     path("", include("sngf_api.event.api.urls"), name="events"),
     path("", include("sngf_api.order.api.urls"), name="orders"),
     path("", include("sngf_api.files.urls"), name="files"),
+    path("contacts/", include("sngf_api.contact.api.urls"), name="contacts"),
     # DRF auth token
     path("api/auth-token/", obtain_auth_token),
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
