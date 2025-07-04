@@ -26,3 +26,4 @@ sentry-sdk~=2.25.0
 factory_boy~=3.3.2
 pytest-django~=4.11.0
 django-phonenumber-field[phonenumbers]
+ratelimit
