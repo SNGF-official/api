@@ -25,7 +25,7 @@ class FlatListPagination(PageNumberPagination):
     parameters=[
         OpenApiParameter("name", str, description="Nom de la plante"),
         OpenApiParameter("keyword", str, description="Recherche par nom ou description"),
-        OpenApiParameter("category", str, description="Catégorie"),
+        OpenApiParameter("categories", str, description="Catégorie (code exact)"),
         OpenApiParameter("size", str, description="Taille (PM/MM/GM/EX/UN)"),
         OpenApiParameter("minQuantity", int),
         OpenApiParameter("maxQuantity", int),
@@ -68,7 +68,7 @@ class UpdatePlantView(UpdateAPIView):
     parameters=[
         OpenApiParameter("name", str, description="Nom de la graine"),
         OpenApiParameter("keyword", str, description="Recherche par nom ou description"),
-        OpenApiParameter("category", str, description="Catégorie"),
+        OpenApiParameter("categories", str, description="Catégorie (code exact)"),
         OpenApiParameter("minQuantity", int),
         OpenApiParameter("maxQuantity", int),
         OpenApiParameter("minPrice", float),
