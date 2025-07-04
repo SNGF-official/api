@@ -1,3 +1,5 @@
+import contextlib
+
 from django.apps import AppConfig
 
 
@@ -6,4 +8,5 @@ class PlantConfig(AppConfig):
     name = "sngf_api.plant"
 
     def ready(self):
-        pass
+        with contextlib.suppress(ImportError):
+            import sngf_api.plant.signals
