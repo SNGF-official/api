@@ -44,3 +44,10 @@ class OrderCreateView(drf_generics.CreateAPIView):
                             status=status.HTTP_403_FORBIDDEN)
 
         return super().create(request, *args, **kwargs)
+
+
+class OrderUpsertView(drf_generics.RetrieveUpdateAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderCreateSerializer
+    permission_classes = [AllowAny]
+    lookup_field = "id"
