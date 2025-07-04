@@ -8,5 +8,4 @@ class PlantConfig(AppConfig):
     name = "sngf_api.plant"
 
     def ready(self):
-        with contextlib.suppress(ImportError):
-            import sngf_api.plant.signals
+        pass
