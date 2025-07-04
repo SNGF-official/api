@@ -282,6 +282,54 @@ paths:
         '400':
           description: Données invalides fournies.
 
+  /contacts/feedback/:
+    post:
+      tags: [ Contacts ]
+      summary: Submit long contact form
+      description: Send a contact message including name, email, phone number, and message.
+      operationId: submitContactFeedback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contact'
+      responses:
+        '201':
+          description: Contact message submitted successfully.
+        '400':
+          description: Invalid input data.
+
+  /contacts/quick-contact/:
+    post:
+      tags: [ Contacts ]
+      summary: Submit quick contact form
+      description: Send a minimal contact message (name, email, message) from quick contact form (e.g. footer).
+      operationId: submitContactMessage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - customerEmail
+                - message
+              properties:
+                name:
+                  type: string
+                customerEmail:
+                  type: string
+                  format: email
+                message:
+                  type: string
+      responses:
+        '201':
+          description: Contact message submitted successfully.
+        '400':
+          description: Invalid input data.
+
   /events/:
     get:
       tags: [ Events ]
@@ -462,52 +510,56 @@ paths:
                   $ref: "#/components/schemas/FileInfo"
 
   /orders/:
-      get:
-        tags: [Orders]
-        summary: Get list of all orders
-        description: Retrieve a paginated list of all orders.
-        operationId: getListOrder
-        parameters:
-          - in: query
-            name: page
-            schema:
-              type: integer
-            description: Page number
-          - in: query
-            name: pageSize
-            schema:
-              type: integer
-            description: Number of results per page
-        responses:
-          '200':
-            description: Liste des commandes récupérée avec succès.
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Order'
+    get:
+      tags: [ Orders ]
+      summary: Get list of all orders
+      description: Retrieve a paginated list of all orders.
+      operationId: getListOrder
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of results per page
+      responses:
+        '200':
+          description: Liste des commandes récupérée avec succès.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
 
-      put:
-        tags: [Orders]
-        summary: Create or update an order
-        description: Create a new order or update an existing order. The operation is idempotent.
-        operationId: putOrder
-        requestBody:
-          required: true
+    put:
+      tags: [ Orders ]
+      summary: Create or update an order (idempotent)
+      description: >
+        Crée une commande si l'identifiant est absent ou inconnu, ou la met à jour si elle existe.
+        Cette opération est idempotente.
+      operationId: putOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Order'
+              description: L'objet Order à créer ou mettre à jour.
+      responses:
+        '200':
+          description: Commande créée ou mise à jour avec succès.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
-        responses:
-          '200':
-            description: Commande créée ou mise à jour avec succès.
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Order'
-          '400':
-            description: Données de commande invalides.
+        '400':
+          description: Données de commande invalides.
 
   /orders/{id}:
     get:
@@ -531,6 +583,36 @@ paths:
                 $ref: '#/components/schemas/Order'
         '404':
           description: Commande non trouvée.
+
+    put:
+      tags: [ Orders ]
+      summary: Update an order
+      operationId: putOrder
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: Commande mise à jour avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Données invalides fournies.
+        '404':
+          description: Commande introuvable.
+
 
   "/files/{file_id}/download/":
     get:
@@ -577,53 +659,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FileInfo"
-  /contacts/feedback/:
-    post:
-      tags: [ Contacts ]
-      summary: Submit long contact form
-      description: Send a contact message including name, email, phone number, and message.
-      operationId: submitContactFeedback
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Contact'
-      responses:
-        '201':
-          description: Contact message submitted successfully.
-        '400':
-          description: Invalid input data.
-
-  /contacts/quick-contact/:
-    post:
-      tags: [ Contacts ]
-      summary: Submit quick contact form
-      description: Send a minimal contact message (name, email, message) from quick contact form (e.g. footer).
-      operationId: submitContactMessage
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - name
-                - customerEmail
-                - message
-              properties:
-                name:
-                  type: string
-                customerEmail:
-                  type: string
-                  format: email
-                message:
-                  type: string
-      responses:
-        '201':
-          description: Contact message submitted successfully.
-        '400':
-          description: Invalid input data.
 
 components:
   schemas:
