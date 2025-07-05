@@ -5,6 +5,21 @@ info:
   description: API for managing plants, seeds, events, blogs, testimonials, and orders for the SNGF website
 
 paths:
+  /categories/:
+    get:
+      tags: [ Categories ]
+      summary: Get list of categories
+      description: Retrieve the list of available categories (plants or seeds).
+      operationId: getCategories
+      responses:
+        '200':
+          description: Liste des catégories récupérée avec succès.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
   /seeds/:
     get:
       tags: [ Seeds ]
@@ -577,6 +592,22 @@ paths:
 
 components:
   schemas:
+    Category:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: "Code de la catégorie (ex: AGROFORESTIERES)"
+        display_name:
+          type: string
+          description: Nom affiché de la catégorie
+
     Image:
       type: object
       required:

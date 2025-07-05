@@ -6,8 +6,8 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.response import Response
 
 from sngf_api.core.models import Status
-from sngf_api.plant.models import Plant, Seed
-from .serializers import PlantSerializer, SeedSerializer
+from sngf_api.plant.models import Plant, Seed, Category
+from .serializers import PlantSerializer, SeedSerializer, CategorySerializer
 from .filters import PlantFilter, SeedFilter
 
 
@@ -20,6 +20,10 @@ class FlatListPagination(PageNumberPagination):
     def get_paginated_response(self, data):
         return Response(data)
 
+class GetCategoriesView(ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [AllowAny]
 
 @extend_schema(
     parameters=[
@@ -41,6 +45,13 @@ class GetListPlantView(ListAPIView):
     pagination_class = FlatListPagination
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
+    filterset_fields = {
+        'name': ['icontains'],
+        'categories__name': ['exact'],
+        'prices__size': ['exact'],
+        'quantity': ['gte', 'lte'],
+        'prices__price': ['gte', 'lte'],
+    }
 
 
 class GetPlantByIdView(RetrieveAPIView):
@@ -82,7 +93,12 @@ class GetListSeedView(ListAPIView):
     pagination_class = FlatListPagination
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
-
+    filterset_fields = {
+        'name': ['icontains'],
+        'categories__name': ['exact'],
+        'quantity': ['gte', 'lte'],
+        'price_per_kilo': ['gte', 'lte'],
+    }
 
 class GetSeedByIdView(RetrieveAPIView):
     queryset = Seed.objects.all()
