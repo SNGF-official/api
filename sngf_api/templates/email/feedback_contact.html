@@ -35,6 +35,12 @@
         border-radius: 5px;
         color: #1f2937;
       }
+      .footer {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 12px;
+        color: #6b7280;
+      }
     </style>
     <title>Email</title>
   </head>
@@ -53,6 +59,10 @@
 
       <div class="label">💬 Message</div>
       <div class="value" style="white-space: pre-line;">{{ message }}</div>
+
+      <div class="footer">
+        © {{ now.year }} <a href="https://sngf-silo.com" style="color: #047857; text-decoration: none;">sngf-silo.com</a>. Tous droits réservés.
+      </div>
     </div>
   </body>
 </html>

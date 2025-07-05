@@ -113,13 +113,13 @@ SERVER_EMAIL = env("DJANGO_SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
 DEFAULT_FROM_EMAIL = env(
     "DJANGO_DEFAULT_FROM_EMAIL",
-    default="sngf_api <noreply@sngf.com>",
+    default="sngf_email <noreply@sngf-silo.com>",
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#server-email
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
 EMAIL_SUBJECT_PREFIX = env(
     "DJANGO_EMAIL_SUBJECT_PREFIX",
-    default="[sngf_api] ",
+    default="[sngf_email] ",
 )
 ACCOUNT_EMAIL_SUBJECT_PREFIX = EMAIL_SUBJECT_PREFIX
 # ADMIN
