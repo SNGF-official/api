@@ -18,7 +18,7 @@ from .base import env
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["sngf.com"])
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["api.preprod.sngf-silo.com","api.prod.sngf-silo.com","preprod.sngf-silo.com", "sngf-silo.com"])
 
 # DATABASES
 # ------------------------------------------------------------------------------
@@ -100,7 +100,8 @@ STATICFILES_DIRS = [str(APPS_DIR / "static")]
 # EMAIL
 EMAIL_HOST_USER = "tech-ylan@sngf-silo.com"
 EMAIL_HOST_PASSWORD = "=hwhFPnhoKW?"
-EMAIL_USE_TLS = False
+EMAIL_USE_SSL = env.bool("DJANGO_EMAIL_USE_SSL", default=True)
+
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
 DEFAULT_FROM_EMAIL = env(
