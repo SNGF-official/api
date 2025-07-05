@@ -1,52 +1,73 @@
 from urllib.parse import urlparse
 
-import rest_framework.generics as drf_generics
 from django.conf import settings
-from rest_framework import status
+from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from sngf_api.order.models import Order
-
-from .serializers import OrderCreateSerializer
-from .serializers import OrderSerializer
+from .serializers import OrderCreateSerializer, OrderSerializer
 
 
-class OrderListView(drf_generics.ListAPIView):
+def is_valid_host(url):
+    if not url:
+        return True
+    parsed = urlparse(url)
+    return parsed.hostname in settings.ALLOWED_HOSTS
+
+
+class OrderListView(generics.ListAPIView):
     queryset = Order.objects.all()
     permission_classes = [AllowAny]
     serializer_class = OrderSerializer
 
 
-class OrderCreateView(drf_generics.CreateAPIView):
+class OrderDetailView(generics.RetrieveAPIView):
     queryset = Order.objects.all()
-    serializer_class = OrderCreateSerializer
+    serializer_class = OrderSerializer
+    permission_classes = [AllowAny]
+    lookup_field = "id"
+
+
+class OrderUpsertView(APIView):
+    """
+    Idempotent create or update an order via PUT on /orders/
+    """
     permission_classes = [AllowAny]
 
-    def create(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         origin = request.META.get("HTTP_ORIGIN")
         referer = request.META.get("HTTP_REFERER")
-        allowed_hosts = settings.ALLOWED_HOSTS
-
-        def is_valid_host(url):
-            if not url:
-                return True
-            parsed = urlparse(url)
-            return parsed.hostname in allowed_hosts
 
         if settings.VERIFY_ORIGIN_REFERER:
             if not is_valid_host(origin):
-                return Response({"detail": "Invalid origin"},
-                                status=status.HTTP_403_FORBIDDEN)
+                return Response({"detail": "Invalid origin"}, status=status.HTTP_403_FORBIDDEN)
+            if not is_valid_host(referer):
+                return Response({"detail": "Invalid referer"}, status=status.HTTP_403_FORBIDDEN)
 
-        if not is_valid_host(referer):
-            return Response({"detail": "Invalid referer"},
-                            status=status.HTTP_403_FORBIDDEN)
+        data = request.data
+        order_id = data.get("id")
 
-        return super().create(request, *args, **kwargs)
+        if order_id:
+            try:
+                order = Order.objects.get(id=order_id)
+                serializer = OrderCreateSerializer(order, data=data, partial=True)
+            except Order.DoesNotExist:
+                serializer = OrderCreateSerializer(data=data)
+        else:
+            serializer = OrderCreateSerializer(data=data)
+
+        if serializer.is_valid():
+            order = serializer.save()
+            return Response(OrderSerializer(order).data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class OrderUpsertView(drf_generics.RetrieveUpdateAPIView):
+class OrderPutByIdView(generics.UpdateAPIView):
+    """
+    PUT /orders/{id} to update an existing order
+    """
     queryset = Order.objects.all()
     serializer_class = OrderCreateSerializer
     permission_classes = [AllowAny]

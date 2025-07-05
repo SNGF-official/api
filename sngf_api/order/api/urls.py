@@ -1,10 +1,15 @@
 from django.urls import path
 
-from sngf_api.order.api.views import OrderCreateView, OrderUpsertView
-from sngf_api.order.api.views import OrderListView
+from .views import (
+    OrderListView,
+    OrderDetailView,
+    OrderUpsertView,
+    OrderPutByIdView,
+)
 
 urlpatterns = [
-    path("orders/", OrderListView.as_view(), name="order-list"),
-    path("orders/create/", OrderCreateView.as_view(), name="order-create"),
-    path("orders/<uuid:id>/", OrderUpsertView.as_view(), name="order-upsert"),
+    path("", OrderListView.as_view(), name="order-list"),
+    path("<uuid:id>/", OrderDetailView.as_view(), name="order-detail"),
+    path("<uuid:id>", OrderPutByIdView.as_view(), name="order-update-id"),
+    path("", OrderUpsertView.as_view(), name="order-upsert"),
 ]
