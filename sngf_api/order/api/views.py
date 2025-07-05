@@ -10,12 +10,16 @@ from sngf_api.order.models import Order
 from .serializers import OrderCreateSerializer, OrderSerializer
 
 
-def is_valid_host(url):
+
+def is_valid_host(url: str | None) -> bool:
     if not url:
         return True
     parsed = urlparse(url)
-    return parsed.hostname in settings.ALLOWED_HOSTS
-
+    hostname = parsed.hostname
+    return hostname and any(
+        hostname == allowed or hostname.endswith(f".{allowed}")
+        for allowed in settings.ALLOWED_HOSTS
+    )
 
 class OrderListView(generics.ListAPIView):
     queryset = Order.objects.all()
