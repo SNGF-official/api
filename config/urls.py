@@ -34,7 +34,7 @@ urlpatterns += [
     path("", include("sngf_api.plant.api.urls"), name="plants"),
     path("", include("sngf_api.blog.api.urls"), name="blogs"),
     path("", include("sngf_api.event.api.urls"), name="events"),
-    path("", include("sngf_api.order.api.urls"), name="orders"),
+    path("orders/", include("sngf_api.order.api.urls"), name="orders"),
     path("", include("sngf_api.files.urls"), name="files"),
     path("contacts/", include("sngf_api.contact.api.urls"), name="contacts"),
     # DRF auth token
