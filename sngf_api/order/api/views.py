@@ -1,6 +1,3 @@
-from urllib.parse import urlparse
-
-from django.conf import settings
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -9,17 +6,6 @@ from rest_framework.views import APIView
 from sngf_api.order.models import Order
 from .serializers import OrderCreateSerializer, OrderSerializer
 
-
-
-def is_valid_host(url: str | None) -> bool:
-    if not url:
-        return True
-    parsed = urlparse(url)
-    hostname = parsed.hostname
-    return hostname and any(
-        hostname == allowed or hostname.endswith(f".{allowed}")
-        for allowed in settings.ALLOWED_HOSTS
-    )
 
 class OrderListView(generics.ListAPIView):
     queryset = Order.objects.all()
@@ -41,15 +27,6 @@ class OrderUpsertView(APIView):
     permission_classes = [AllowAny]
 
     def put(self, request, *args, **kwargs):
-        origin = request.META.get("HTTP_ORIGIN")
-        referer = request.META.get("HTTP_REFERER")
-
-        if settings.VERIFY_ORIGIN_REFERER:
-            if not is_valid_host(origin):
-                return Response({"detail": "Invalid origin"}, status=status.HTTP_403_FORBIDDEN)
-            if not is_valid_host(referer):
-                return Response({"detail": "Invalid referer"}, status=status.HTTP_403_FORBIDDEN)
-
         data = request.data
         order_id = data.get("id")
 
