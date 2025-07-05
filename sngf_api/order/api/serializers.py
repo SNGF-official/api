@@ -47,7 +47,7 @@ class OrderSerializer(ModelSerializer):
 
 class OrderCreateSerializer(ModelSerializer):
     items = OrderItemSerializer(many=True)
-
+    status = serializers.CharField(required=False, default="PENDING")
     class Meta:
         model = Order
         fields = [
