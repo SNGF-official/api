@@ -148,13 +148,10 @@
           Plante
         {% endif %}
       </td>
-      <td>{{ item.quantity }} {{ item.unit|default:"" }}</td>
+      <td>{{ item.quantity }}</td>
       <td>
         {% if item.type == "PLANT" %}
-          {% if item.size == "PM" %}Petit modèle
-          {% elif item.size == "MM" %}Modèle moyen
-          {% elif item.size == "GM" %}Grand modèle
-          {% else %}-{% endif %}
+            {{ item.size }}
         {% else %}
           -
         {% endif %}

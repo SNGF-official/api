@@ -41,7 +41,6 @@ class GetListPlantView(ListAPIView):
     pagination_class = FlatListPagination
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
-    filterset_class = PlantFilter
 
 
 class GetPlantByIdView(RetrieveAPIView):
@@ -83,7 +82,6 @@ class GetListSeedView(ListAPIView):
     pagination_class = FlatListPagination
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
-    filterset_class = SeedFilter
 
 
 class GetSeedByIdView(RetrieveAPIView):

@@ -140,6 +140,8 @@ class PlantSizePrice(models.Model):
         PM = "PM", "Petit modèle"
         MM = "MM", "Modèle moyen"
         GM = "GM", "Grand modèle"
+        X = "X", "Extrème modèle"
+        UN = "UN", "Unique modèle"
 
     id = models.UUIDField(
         primary_key=True,

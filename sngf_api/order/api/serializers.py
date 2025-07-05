@@ -152,7 +152,7 @@ class OrderCreateSerializer(ModelSerializer):
             line = (
                 f"- Produit : {product_name} | "
                 f"Type : {'Graine' if item.type == 'SEED' else 'Plante'} | "
-                f"Quantité : {item.quantity} {item.unit or ''} | "
+                f"Quantité : {item.quantity} | "
                 f"Taille : {size_label} | "
                 f"Prix unitaire : {price} | "
                 f"Total : {total_price:.0f} Ar"
