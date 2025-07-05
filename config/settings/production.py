@@ -100,7 +100,7 @@ STATICFILES_DIRS = [str(APPS_DIR / "static")]
 # EMAIL
 EMAIL_HOST_USER = "tech-ylan@sngf-silo.com"
 EMAIL_HOST_PASSWORD = "=hwhFPnhoKW?"
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = False
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
 DEFAULT_FROM_EMAIL = env(
