@@ -103,12 +103,13 @@ class ContactSimpleAPIView(APIView):
 ────────────────────────────────────
 Ce message a été soumis via le formulaire rapide de contact sur sngf-silo.com
 """
+            admin_emails = settings.ORDER_NOTIFICATION_EMAILS
 
             email = EmailMultiAlternatives(
                 subject="📨 Nouveau message via formulaire contact pour administration",
                 body=text_content.strip(),
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                to=["contact@sngf-silo.com", "tech-ylan@sngf-silo.com"],
+                to=admin_emails,
             )
             email.attach_alternative(html_content, "text/html")
             email.send()

@@ -1,10 +1,15 @@
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from sngf_api.core.mail import SendMail
 from sngf_api.order.models import Order
 from sngf_api.order.models import OrderItem
+from django.utils.timezone import now
+
+from sngf_api.plant.models import Seed, Plant
 
 
 class OrderItemSerializer(ModelSerializer):
@@ -47,7 +52,11 @@ class OrderSerializer(ModelSerializer):
 
 class OrderCreateSerializer(ModelSerializer):
     items = OrderItemSerializer(many=True)
-    status = serializers.CharField(required=False, default="PENDING")
+    status = serializers.ChoiceField(
+        choices=Order.OrderStatus.choices,
+        default=Order.OrderStatus.PENDING,
+        required=False,
+    )
     class Meta:
         model = Order
         fields = [
@@ -63,7 +72,7 @@ class OrderCreateSerializer(ModelSerializer):
         items_data = validated_data.pop("items", [])
 
         order = Order.objects.create(
-            status=validated_data.get("status"),
+            status=validated_data.get("status", Order.OrderStatus.PENDING),
             contact_name=validated_data.get("contact_name"),
             contact_email=validated_data.get("contact_email"),
             contact_number=validated_data.get("contact_number"),
@@ -100,39 +109,86 @@ class OrderCreateSerializer(ModelSerializer):
                 )
 
         subject = f"Nouvelle commande au nom de #{order.contact_name}"
-
-        item_lines = []
+        now_dt = now().strftime("%d/%m/%Y %H:%M")
+        items = []
         for item in order.items.all():
-            line = (
-                f"- Produit ID: {item.product_id} | "
-                f"Type: {item.type} | "
-                f"Quantité: {item.quantity} {item.unit or ''} | "
-                f"Taille: {item.size or '-'} | "
-                f"Prix unitaire: {item.price:.2f}€"
-            )
-            item_lines.append(line)
-        items_text = "\n".join(item_lines)
-
-        body = f"""
-        Nouvelle commande soumise :
-            Informations client :
-            - Nom : {order.contact_name}
-            - Email : {order.contact_email}
-            - Téléphone : {order.contact_number}
-
-        Détails de la commande :
-            {items_text}
-        Merci de vérifier dans l'admin.
-                """
-        admin_emails = settings.ORDER_NOTIFICATION_EMAILS
-        from_email = order.contact_email or "no-reply@example.com"
-
-        mail = SendMail(
-            subject=subject,
-            body=body,
-            to=admin_emails,
-            from_email=from_email,
+            if item.type == "SEED":
+                try:
+                    seed = Seed.objects.get(id=item.product_id)
+                    item.seed = seed
+                except Seed.DoesNotExist:
+                    item.seed = None
+            else:
+                try:
+                    plant = Plant.objects.get(id=item.product_id)
+                    item.plant = plant
+                except Plant.DoesNotExist:
+                    item.plant = None
+            items.append(item)
+        total_order_amount = sum(
+            float(item.price) * int(item.quantity)
+            for item in items
+            if float(item.price) is not None and int(item.quantity) is not None
         )
-        mail.send()
+        plain_lines = []
+        for item in items:
+            if item.type == "SEED":
+                product_name = getattr(item.seed, "scientific_name", "Graine inconnue")
+                price = f"{item.seed.price_per_kilo:.0f} Ar/kg" if item.seed and item.seed.price_per_kilo else "Prix inconnu"
+                size_label = "-"  # non applicable
+            else:
+                product_name = getattr(item.plant, "scientific_name", "Plante inconnue")
+                size_map = {
+                    "PM": "Petit modèle",
+                    "MM": "Modèle moyen",
+                    "GM": "Grand modèle",
+                    "X": "Extrème modèle",
+                    "UN": "Modèle unique",
+                }
+                size_label = size_map.get(item.size, item.size or "-")
+                price = f"{item.price:.0f} Ar"
+
+            total_price = item.price * item.quantity
+            line = (
+                f"- Produit : {product_name} | "
+                f"Type : {'Graine' if item.type == 'SEED' else 'Plante'} | "
+                f"Quantité : {item.quantity} {item.unit or ''} | "
+                f"Taille : {size_label} | "
+                f"Prix unitaire : {price} | "
+                f"Total : {total_price:.0f} Ar"
+            )
+            plain_lines.append(line)
+
+        plain_body = f"""
+        Nouvelle commande reçue le {now_dt}
+
+        Client :
+        - Nom : {order.contact_name}
+        - Email : {order.contact_email}
+        - Téléphone : {order.contact_number}
+
+        Commande :
+        {chr(10).join(plain_lines)}
+
+        Merci de vérifier dans l'administration de SNGF.
+        """
+
+        html_body = render_to_string("email/order_confirmation.html", {
+            "order": order,
+            "items": items,
+            "now": now_dt,
+            "total": f"{total_order_amount:.2f}",
+        })
+
+        admin_emails = settings.ORDER_NOTIFICATION_EMAILS
+        from_email = order.contact_email or settings.DEFAULT_FROM_EMAIL
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=plain_body.strip(),
+            from_email=from_email,
+            to=admin_emails,
+        )
+        email.attach_alternative(html_body, "text/html")
+        email.send()
 
         return order

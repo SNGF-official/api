@@ -1,4 +1,5 @@
 from rest_framework import generics, status
+from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -49,3 +50,13 @@ class OrderPutByIdView(generics.UpdateAPIView):
     serializer_class = OrderCreateSerializer
     permission_classes = [AllowAny]
     lookup_field = "id"
+
+@api_view(["POST"])
+def confirm_order(request, id):
+    try:
+        order = Order.objects.get(id=id)
+        order.status = Order.OrderStatus.CONFIRMED
+        order.save()
+        return Response({"message": "Commande confirmée"})
+    except Order.DoesNotExist:
+        return Response({"error": "Commande introuvable"}, status=404)

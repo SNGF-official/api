@@ -183,7 +183,7 @@ EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", default=587)
 EMAIL_HOST_USER = env("DJANGO_EMAIL_HOST_USER", default="noreply@yourdomain.com")
 EMAIL_HOST_PASSWORD = env("DJANGO_EMAIL_HOST_PASSWORD", default="your-email-password")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-ORDER_NOTIFICATION_EMAILS = ["commercial@sngf-silo.com", "contact@sngf-silo.com", "tech-ylan@sngf-silo.com"]
+ORDER_NOTIFICATION_EMAILS = ["commercial@sngf-silo.com", "contact@sngf-silo.com", "tech-ylan@sngf-silo.com", "admin@sngf-silo.com"]
 
 # ADMIN
 ADMIN_URL = "admin/"

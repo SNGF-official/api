@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9fafb;
+      color: #111827;
+      padding: 40px;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 30px;
+    }
+
+    h1 {
+      color: #047857;
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+    }
+
+    .section-title span {
+      margin-right: 6px;
+    }
+
+    .text-block {
+      background-color: #f3f4f6;
+      padding: 10px 12px;
+      border-radius: 5px;
+      color: #1f2937;
+      font-size: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table thead {
+      background-color: #f3f4f6;
+    }
+
+    table th, table td {
+      padding: 10px;
+      font-size: 14px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    .total-row th {
+      text-align: right;
+      font-weight: bold;
+      font-size: 15px;
+      padding-top: 16px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 20px;
+      background-color: #10b981;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background-color: #059669;
+    }
+
+    .footer {
+      margin-top: 40px;
+      font-size: 12px;
+      color: #6b7280;
+      text-align: center;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📦 Nouvelle commande reçue</h1>
+
+    <div class="section">
+      <div class="section-title"><span>🗓️</span> Date</div>
+      <div class="text-block">{{ now }}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span>👤</span> Informations client</div>
+      <div class="text-block">
+        Nom : {{ order.contact_name|default:"Inconnu" }}<br />
+        Email : {{ order.contact_email|default:"Non fourni" }}<br />
+        Téléphone : {{ order.contact_number|default:"Non fourni" }}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span>📄</span> Détails de la commande</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>Type</th>
+            <th>Quantité</th>
+            <th>Taille</th>
+            <th>Prix unitaire</th>
+          </tr>
+        </thead>
+        <tbody>
+  {% for item in items %}
+    <tr>
+      <td>
+        {% if item.type == "SEED" %}
+          {{ item.seed.scientific_name|default:"Graine inconnue" }}
+        {% else %}
+          {{ item.plant.scientific_name|default:"Plante inconnue" }}
+        {% endif %}
+      </td>
+      <td>
+        {% if item.type == "SEED" %}
+          Graine
+        {% else %}
+          Plante
+        {% endif %}
+      </td>
+      <td>{{ item.quantity }} {{ item.unit|default:"" }}</td>
+      <td>
+        {% if item.type == "PLANT" %}
+          {% if item.size == "PM" %}Petit modèle
+          {% elif item.size == "MM" %}Modèle moyen
+          {% elif item.size == "GM" %}Grand modèle
+          {% else %}-{% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </td>
+      <td>
+        {% if item.type == "SEED" and item.seed %}
+          {{ item.seed.price_per_kilo|floatformat:0 }} Ar/kg
+        {% else %}
+          {{ item.price|floatformat:0 }} Ar
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+</tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      © {{ now|date:"Y" }} SNGF - Silo National des Graines Forestières
+    </div>
+  </div>
+</body>
+</html>
