@@ -33,18 +33,6 @@ class OrderAdmin(admin.ModelAdmin):
         """Méthode pour afficher le nombre d'items dans chaque commande"""
         return obj.items.count()
 
-
-@admin.register(OrderItem)
-class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ("order", "product_id", "type", "quantity", "unit", "size", "price")
-    list_filter = ("type", "unit")
-    search_fields = ("product_id", "order__contact_name")
-    ordering = ("order", "product_id")
-    readonly_fields = ("order", "product_id")
-
-@admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ("id", "contact_name", "contact_email", "submitted_at", "status")
     actions = ["resend_confirmation_email"]
 
     @admin.action(description="📨 Renvoyer l'email de confirmation")
@@ -62,3 +50,12 @@ class OrderAdmin(admin.ModelAdmin):
                 )
         if sent:
             self.message_user(request, f"{sent} email(s) de confirmation renvoyé(s).")
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ("order", "product_id", "type", "quantity", "unit", "size", "price")
+    list_filter = ("type", "unit")
+    search_fields = ("product_id", "order__contact_name")
+    ordering = ("order", "product_id")
+    readonly_fields = ("order", "product_id")
+
