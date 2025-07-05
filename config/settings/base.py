@@ -180,7 +180,6 @@ EMAIL_BACKEND = env(
 )
 EMAIL_HOST = env("DJANGO_EMAIL_HOST", default="mail.sngf-silo.com")
 EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", default=587)
-EMAIL_USE_SSL = env.bool("DJANGO_EMAIL_USE_SSL", default=True)
 EMAIL_HOST_USER = env("DJANGO_EMAIL_HOST_USER", default="noreply@yourdomain.com")
 EMAIL_HOST_PASSWORD = env("DJANGO_EMAIL_HOST_PASSWORD", default="your-email-password")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
