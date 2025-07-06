@@ -52,6 +52,8 @@ class GetListPlantView(ListAPIView):
         'quantity': ['gte', 'lte'],
         'prices__price': ['gte', 'lte'],
     }
+    ordering_fields = ['poids']
+    ordering = ['poids']
 
 
 class GetPlantByIdView(RetrieveAPIView):
@@ -99,6 +101,8 @@ class GetListSeedView(ListAPIView):
         'quantity': ['gte', 'lte'],
         'price_per_kilo': ['gte', 'lte'],
     }
+    ordering_fields = ['poids']
+    ordering = ['poids']
 
 class GetSeedByIdView(RetrieveAPIView):
     queryset = Seed.objects.all()
