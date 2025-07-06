@@ -13,8 +13,7 @@ class UploadRawFileSerializer(serializers.Serializer):
         validators=[UniqueValidator(queryset=FileModel.objects.all())],
     )
     type = serializers.CharField(max_length=250)
-    fileToUpload = serializers.ListField(
-        source="file",
+    file = serializers.ListField(
         child=serializers.IntegerField(),
     )
     createdAt = serializers.DateTimeField(source="created_at", required=False)
@@ -25,7 +24,7 @@ class UploadRawFileSerializer(serializers.Serializer):
             "name",
             "type",
             "createdAt",
-            "fileToUpload",
+            "file",
         )
 
     def create(self, validated_data):
@@ -39,7 +38,6 @@ class UploadFileSerializer(serializers.Serializer):
         validators=[UniqueValidator(queryset=FileModel.objects.all())],
     )
     type = serializers.CharField(max_length=250)
-    fileToUpload = serializers.FileField(source="file")
     createdAt = serializers.DateTimeField(source="created_at", required=False)
 
     class Meta:
@@ -48,7 +46,7 @@ class UploadFileSerializer(serializers.Serializer):
             "name",
             "type",
             "createdAt",
-            "fileToUpload",
+            "file",
         )
 
     def create(self, validated_data):

@@ -48,7 +48,7 @@ class UploadFileView(drf_generics.ListCreateAPIView):
     filterset_class = FileResourceFilter
 
     def post(self, request, *args, **kwargs):
-        file = request.data.get("fileToUpload")
+        file = request.data.get("file")
         if not file:
             return Response(
                 {"detail": "No file was uploaded."},
