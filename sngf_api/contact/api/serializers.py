@@ -5,7 +5,7 @@ from sngf_api.contact.models import Contact
 
 class ContactSerializer(serializers.ModelSerializer):
     customer_email = serializers.EmailField(required=False, allow_blank=True)
-    number = PhoneNumberField(required=False, allow_null=True)
+    number = PhoneNumberField(required=False, allow_null=True, allow_blank=True)
 
     class Meta:
         model = Contact
