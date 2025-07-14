@@ -25,6 +25,7 @@ class PlantAdmin(admin.ModelAdmin):
     search_fields = ("name", "description")
     inlines = [PlantImageInline, PlantSizePriceInline]
     filter_horizontal = ("categories",)
+    ordering = ("name",)
 
 
 @admin.register(PlantImage)
@@ -53,6 +54,7 @@ class SeedAdmin(admin.ModelAdmin):
     search_fields = ("name", "description")
     inlines = [SeedImageInline]
     filter_horizontal = ("categories",)
+    ordering = ("name",)
 
 
 @admin.register(SeedImage)
@@ -66,3 +68,4 @@ class SeedImageAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("name", "display_name")
     search_fields = ("name", "display_name")
+    ordering = ("name",)

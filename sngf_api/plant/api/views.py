@@ -1,3 +1,4 @@
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.pagination import PageNumberPagination
@@ -44,7 +45,7 @@ class GetListPlantView(ListAPIView):
     serializer_class = PlantSerializer
     pagination_class = FlatListPagination
     permission_classes = [AllowAny]
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = {
         'name': ['icontains'],
         'categories__name': ['exact'],
@@ -52,8 +53,8 @@ class GetListPlantView(ListAPIView):
         'quantity': ['gte', 'lte'],
         'prices__price': ['gte', 'lte'],
     }
-    ordering_fields = ['poids']
-    ordering = ['poids']
+    ordering_fields = ['name', 'poids']
+    ordering = ['name']
 
 
 class GetPlantByIdView(RetrieveAPIView):
@@ -94,15 +95,15 @@ class GetListSeedView(ListAPIView):
     serializer_class = SeedSerializer
     pagination_class = FlatListPagination
     permission_classes = [AllowAny]
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = {
         'name': ['icontains'],
         'categories__name': ['exact'],
         'quantity': ['gte', 'lte'],
         'price_per_kilo': ['gte', 'lte'],
     }
-    ordering_fields = ['poids']
-    ordering = ['poids']
+    ordering_fields = ['name', 'poids']
+    ordering = ['name']
 
 class GetSeedByIdView(RetrieveAPIView):
     queryset = Seed.objects.all()
