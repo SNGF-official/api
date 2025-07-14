@@ -6,7 +6,43 @@ from .models import PlantImage
 from .models import PlantSizePrice
 from .models import Seed
 from .models import SeedImage
+from django.contrib.admin import SimpleListFilter
 
+
+class HasPlantImageFilter(SimpleListFilter):
+    title = "Image"
+    parameter_name = "has_image"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("yes", "✅ Avec image"),
+            ("no", "❌ Sans image"),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == "yes":
+            return queryset.filter(images__isnull=False).distinct()
+        elif self.value() == "no":
+            return queryset.filter(images__isnull=True)
+        return queryset
+
+
+class HasSeedImageFilter(SimpleListFilter):
+    title = "Image"
+    parameter_name = "has_image"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("yes", "✅ Avec image"),
+            ("no", "❌ Sans image"),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == "yes":
+            return queryset.filter(images__isnull=False).distinct()
+        elif self.value() == "no":
+            return queryset.filter(images__isnull=True)
+        return queryset
 
 class PlantImageInline(admin.TabularInline):
     model = PlantImage
@@ -20,12 +56,19 @@ class PlantSizePriceInline(admin.TabularInline):
 
 @admin.register(Plant)
 class PlantAdmin(admin.ModelAdmin):
-    list_display = ("name", "quantity", "status")
-    list_filter = ("categories", "status")
+    list_display = ("name", "quantity", "status", "image")
+    list_filter = ("categories", "status", HasPlantImageFilter)
     search_fields = ("name", "description")
     inlines = [PlantImageInline, PlantSizePriceInline]
     filter_horizontal = ("categories",)
     ordering = ("name",)
+
+    def image(self, obj):
+        return "✅" if obj.images.exists() else "❌"
+
+    image.short_description = "Image"
+    image.admin_order_field = None
+
 
 
 @admin.register(PlantImage)
@@ -49,12 +92,19 @@ class SeedImageInline(admin.TabularInline):
 
 @admin.register(Seed)
 class SeedAdmin(admin.ModelAdmin):
-    list_display = ("name", "quantity", "status", "price_per_kilo")
-    list_filter = ("categories", "status")
+    list_display = ("name", "quantity", "status", "price_per_kilo", "image")
+    list_filter = ("categories", "status", HasSeedImageFilter)
     search_fields = ("name", "description")
     inlines = [SeedImageInline]
     filter_horizontal = ("categories",)
     ordering = ("name",)
+
+    def image(self, obj):
+        return "✅" if obj.images.exists() else "❌"
+
+    image.short_description = "Image"
+    image.admin_order_field = None
+
 
 
 @admin.register(SeedImage)
