@@ -12,8 +12,8 @@ class EventModel(models.Model):
         default=uuid.uuid4,
         editable=False,
     )
-    title = models.TextField(max_length=250, null=False)
-    description = models.TextField(blank=True)
+    title = models.TextField(max_length=250, null=False, help_text="NB: N'ajoutez en aucun cas des émojies")
+    description = models.TextField(blank=True, help_text="NB: N'ajoutez en aucun cas des émojies")
     status = models.CharField(max_length=20, choices=Status.STATUS)
     date = models.DateTimeField(null=False)
     location = models.TextField(blank=True)
