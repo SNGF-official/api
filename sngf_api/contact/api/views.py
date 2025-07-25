@@ -53,7 +53,7 @@ Ce message a été généré via le formulaire de feedback sur sngf-silo.com
                 subject="📩 Nouveau message via le formulaire de feedback (retour client)",
                 body=text_content.strip(),
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                to=["contact@sngf-silo.com", "tech-ylan@sngf-silo.com"],
+                to=["contact@sngf-silo.com", "tech-ylan@sngf-silo.com", "admin@sngf-silo.com"],
             )
             email.attach_alternative(html_content, "text/html")
             email.send()
