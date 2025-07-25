@@ -24,6 +24,11 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 
 # DATABASES
 DATABASES = {"default": env.db("DATABASE_URL")}
+DATABASES["default"]['OPTIONS'] = {
+    'charset': 'utf8mb4',
+    'init_command': "SET NAMES 'utf8mb4'"
+}
+
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
